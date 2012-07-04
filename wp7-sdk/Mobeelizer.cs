@@ -1,0 +1,111 @@
+﻿using System;
+using Com.Mobeelizer.Mobile.Wp7.Api;
+using Com.Mobeelizer.Mobile.Wp7.Configuration;
+using Microsoft.Practices.Mobile.Configuration;
+using System.Reflection;
+
+namespace Com.Mobeelizer.Mobile.Wp7
+{
+    public class Mobeelizer
+    {
+        private static MobeelizerApplication instance;
+
+        private static MobeelizerApplication Instance
+        {
+            get
+            {
+                return instance;
+            }
+
+            set
+            {
+                instance = value;
+            }
+        }
+
+        public static String VERSION
+        {
+            get
+            {
+                //TODO 
+                //return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                return "1.0.0";
+            }
+        }
+
+        public static bool IsLoggedIn
+        {
+            get
+            {
+                return Instance.IsLoggedIn;
+            }
+        }
+
+        public static void OnLaunching()
+        {
+            Instance = MobeelizerApplication.CreateApplication();
+        }
+
+        public static void OnClosing()
+        {
+            Instance.Logout();
+        }
+
+        public static MobeelizerLoginStatus Login(String instance, String login, String password)
+        {
+            return Instance.Login(instance, login, password);
+        }
+
+        public static void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
+        {
+            Instance.Login(instance, login, password, callback);
+        }
+
+        public static MobeelizerLoginStatus Login(String login, String password)
+        {
+            return Instance.Login(login, password);
+        }
+
+        public static void Login(String login, String password, MobeelizerLoginCallback callback)
+        {
+            Instance.Login(login, password, callback);
+        }
+
+        public static void Logout()
+        {
+            Instance.Logout();
+        }
+
+        public static MobeelizerDatabase GetDatabase()
+        {
+            return Instance.GetDatabase();
+        }
+
+        public static void Sync(MobeelizerSyncCallback callback)
+        {
+            Instance.Sync(callback);
+        }
+
+        public static MobeelizerSyncStatus Sync()
+        {
+            return Instance.Sync();
+        }
+
+        public static void SyncAll(MobeelizerSyncCallback callback)
+        {
+            Instance.SyncAll(callback);
+        }
+
+        public static MobeelizerSyncStatus SyncAll()
+        {
+            return Instance.SyncAll();
+        }
+
+        public static MobeelizerSyncStatus CheckSyncStatus()
+        {
+            return Instance.CheckSyncStatus();
+        }
+
+        // TODO: Notyfication
+    }
+}
