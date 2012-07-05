@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="test2" conflictMode="OVERWRITE" vendor="hajduczek">
+  <devices>
+    <device name="mobile"/>
+  </devices>
+  <groups>
+    <group name="users"/>
+  </groups>
+  <roles>
+    <role device="mobile" group="users"/>
+  </roles>
+  <models>
+    <model name="Blog">
+      <fields>
+        <field name="title" required="true" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field name="content" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+  </models>
+</application>

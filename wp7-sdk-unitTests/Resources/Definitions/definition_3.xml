@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="test" conflictMode="MANUAL" vendor="hajduczek">
+  <devices>
+    <device name="mobile"/>
+  </devices>
+  <groups>
+    <group name="users"/>
+  </groups>
+  <roles>
+    <role device="mobile" group="users"/>
+  </roles>
+  <models>
+    <model name="Zebra">
+      <fields>
+        <field name="nazwa" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+    <model name="Alibaba">
+      <fields>
+        <field name="costam" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+    <model name="User">
+      <fields>
+        <field defaultValue="" name="surname" required="true" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="maxLength">40</option>
+          </options>
+        </field>
+        <field defaultValue="" name="name" required="true" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="maxLength">30</option>
+          </options>
+        </field>
+        <field name="country" required="true" type="BELONGS_TO">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="analyzeConflict">true</option>
+            <option name="model">Blog</option>
+          </options>
+        </field>
+        <field name="picture" required="false" type="FILE">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field defaultValue="170" name="height" required="false" type="INTEGER">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="minValue">0</option>
+            <option name="maxValue">250</option>
+          </options>
+        </field>
+        <field defaultValue="false" name="isMaried" required="true" type="BOOLEAN">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field name="birdhDate" required="true" type="DATE">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field defaultValue="170" name="weight" required="true" type="DECIMAL">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="scale">2</option>
+            <option name="minValue">0</option>
+            <option name="includeMinValue">true</option>
+            <option name="includeMaxValue">true</option>
+            <option name="maxValue">250</option>
+          </options>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+    <model name="Blog">
+      <fields>
+        <field name="title" required="true" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field name="content" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field defaultValue="3" name="number" required="true" type="DECIMAL">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="scale">2</option>
+            <option name="minValue">2</option>
+            <option name="includeMinValue">true</option>
+            <option name="includeMaxValue">true</option>
+            <option name="maxValue">4.4</option>
+          </options>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+  </models>
+</application>

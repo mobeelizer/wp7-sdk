@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="test" conflictMode="MANUAL" vendor="hajduczek">
+  <devices>
+    <device name="mobile"/>
+  </devices>
+  <groups>
+    <group name="users"/>
+  </groups>
+  <roles>
+    <role device="mobile" group="users"/>
+  </roles>
+  <models>
+    <model name="blog">
+      <fields>
+        <field name="title" required="true" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field name="content" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field defaultValue="3" name="number" required="true" type="DECIMAL">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="scale">2</option>
+            <option name="minValue">2</option>
+            <option name="includeMinValue">true</option>
+            <option name="includeMaxValue">true</option>
+            <option name="maxValue">4.4</option>
+          </options>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+  </models>
+</application>
