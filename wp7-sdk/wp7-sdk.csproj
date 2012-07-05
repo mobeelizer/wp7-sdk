@@ -43,6 +43,7 @@
   <ItemGroup>
     <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="system.data.linq" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -84,6 +85,9 @@
     <Compile Include="Mobeelizer.cs" />
     <Compile Include="MobeelizerApplication.cs" />
     <Compile Include="Api\MobeelizerLoginCallback.cs" />
+    <Compile Include="MobeelizerInternalDatabase.cs" />
+    <Compile Include="MobeelizerInternalDatabaseContext.cs" />
+    <Compile Include="MobeelizerRoleEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

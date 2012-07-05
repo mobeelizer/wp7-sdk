@@ -56,6 +56,7 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight">
       <HintPath>libs\Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</HintPath>
     </Reference>
+    <Reference Include="system.data.linq" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -81,6 +82,7 @@
     <Compile Include="Tests\Definition\MobeelizerModelFieldCredentialsDefinitionTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerModelFieldDefinitionTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerRoleDefinitionTest.cs" />
+    <Compile Include="Tests\MobeelizerInternalDatabaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -106,9 +108,12 @@
     <Content Include="Resources\Definitions\definition_1.xml" />
     <Content Include="Resources\Definitions\definition_2.xml" />
     <Content Include="Resources\Definitions\definition_3.xml" />
+    <Content Include="Resources\Definitions\ModelsTest.xml" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\wp7-sdk\wp7-sdk.csproj">
       <Project>{D914AA24-17B0-4EB1-852B-243908268CBA}</Project>
