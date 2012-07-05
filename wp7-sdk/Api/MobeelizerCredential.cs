@@ -6,7 +6,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         /// <summary>
         /// No permission. 
         /// </summary>
-        NONE,
+        NONE = 0,
 
         /// <summary>
         /// Permission only for own entities.

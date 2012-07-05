@@ -6,17 +6,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
     public class MobeelizerModelFieldDefinition : IMobeelizerDefinition
     {
-        internal String Name { get; set; }
+        public String Name { get; set; }
 
-        internal MobeelizerFieldType Type { get; set; }
+        public MobeelizerFieldType Type { get; set; }
 
-        internal IList<MobeelizerModelFieldCredentialsDefinition> Credentials { get; set; }
+        public IList<MobeelizerModelFieldCredentialsDefinition> Credentials { get; set; }
 
-        internal bool IsRequired { get; set; }
+        public bool IsRequired { get; set; }
 
-        internal String DefaultValue { get; set; }
+        public String DefaultValue { get; set; }
 
-        internal Dictionary<String, String> Options { get; set; }
+        public Dictionary<String, String> Options { get; set; }
 
         public string DigestString
         {
@@ -24,8 +24,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
             {
                 StringBuilder sb = new StringBuilder().Append(Name).Append("{");
                 sb.Append(Type.ToString()).Append("$");
-                sb.Append(IsRequired).Append("$");
-                sb.Append(DefaultValue).Append("$");
+                sb.Append(IsRequired.ToString().ToLower()).Append("$");
+                sb.Append((DefaultValue == null)?"null":DefaultValue).Append("$");
                 MobeelizerApplicationDefinition.DigestSortJoinAndAdd(sb, Credentials);
                 sb.Append("$");
                 if (Options != null)

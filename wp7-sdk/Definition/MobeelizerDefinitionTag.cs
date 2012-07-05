@@ -5,8 +5,10 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    class MobeelizerDefinitionTag
+    internal class MobeelizerDefinitionTag
     {
+        public const string NAMESPACE = "http://schema.mobeelizer.com/application";
+
         public const String APPLICATION_TAG = "application";
 
         public const String CONFLICT_MODE_TAG = "conflictMode";
@@ -52,5 +54,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
         public const String DELETE_ALLOWED_TAG = "deleteAllowed";
 
         public const String RESOLVE_CONFLICT_ALLOWED_TAG = "resolveConflictAllowed";
+
+        public const String OPTIONS_TAG = "options";
+
+        public const String OPTION_TAG = "option";
+
+        public const String DEFAULT_VALUE_TAG = "defaultValue";
     }
 }

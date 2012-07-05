@@ -21,11 +21,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
         {
             get
             {
-                /// TODO: check this
                 return this.Role
                         + "="
-                        + String.Format("{0}{1}{2}{3}{4}", this.ReadAllowed, this.CreateAllowed, this.UpdateAllowed,
-                        this.DeleteAllowed, IsResolveConflictAllowed ? 1 : 0);
+                        + String.Format("{0}{1}{2}{3}{4}", this.ReadAllowed.GetHashCode(), this.CreateAllowed.GetHashCode(), this.UpdateAllowed.GetHashCode(),
+                        this.DeleteAllowed.GetHashCode(), IsResolveConflictAllowed ? 1 : 0);
             }
         }
     }

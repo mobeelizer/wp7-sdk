@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    internal interface IMobeelizerDefinition
+    public interface IMobeelizerDefinition
     {
         String DigestString { get; }
     }
