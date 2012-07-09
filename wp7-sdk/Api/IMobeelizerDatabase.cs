@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
-    public interface MobeelizerDatabase
+    public interface IMobeelizerDatabase
     {
     }
 }

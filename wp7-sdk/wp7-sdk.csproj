@@ -43,6 +43,9 @@
   <ItemGroup>
     <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="system.data.linq" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -56,13 +59,22 @@
     <Compile Include="Api\MobeelizerCredential.cs" />
     <Compile Include="Api\MobeelizerMode.cs" />
     <Compile Include="Api\MobeelizerSyncStatus.cs" />
-    <Compile Include="Api\MobeelizerDatabase.cs" />
+    <Compile Include="Api\IMobeelizerDatabase.cs" />
     <Compile Include="Api\MobeelizerLoginStatus.cs" />
     <Compile Include="Api\MobeelizerSyncCallback.cs" />
     <Compile Include="Configuration\MobeelizerConfigProperty.cs" />
     <Compile Include="Configuration\MobeelizerConfigurationSection.cs" />
     <Compile Include="Configuration\MobeelizerPropertiesCollection.cs" />
+    <Compile Include="Connection\IMobeelizerConnectionService.cs" />
+    <Compile Include="Connection\MobeelizerAuthenticateResponse.cs" />
+    <Compile Include="Connection\MobeelizerAuthenticateResponseCallback.cs" />
+    <Compile Include="Connection\IMobeelizerAuthenticateResponse.cs" />
+    <Compile Include="Connection\MobeelizerConnectionService.cs" />
+    <Compile Include="Connection\MobeelizerGetSyncDataCallback.cs" />
+    <Compile Include="Connection\MobeelizerSynchronizationStatus.cs" />
+    <Compile Include="Connection\MobeelizerSyncRequestCallback.cs" />
     <Compile Include="Definition\IMobeelizerDefinition.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="Definition\MobeelizerApplicationDefinition.cs" />
     <Compile Include="Definition\MobeelizerDefinitionParser.cs" />
     <Compile Include="Definition\MobeelizerDefinitionTag.cs" />
@@ -85,9 +97,16 @@
     <Compile Include="Mobeelizer.cs" />
     <Compile Include="MobeelizerApplication.cs" />
     <Compile Include="Api\MobeelizerLoginCallback.cs" />
+    <Compile Include="IMobeelizerConnectionManager.cs" />
+    <Compile Include="MobeelizerDatabase.cs" />
+    <Compile Include="MobeelizerDataFileService.cs" />
     <Compile Include="MobeelizerInternalDatabase.cs" />
     <Compile Include="MobeelizerInternalDatabaseContext.cs" />
+    <Compile Include="MobeelizerLoginResponse.cs" />
+    <Compile Include="MobeelizerLoginResponseCallback.cs" />
+    <Compile Include="MobeelizerRealConnectionManager.cs" />
     <Compile Include="MobeelizerRoleEntity.cs" />
+    <Compile Include="MobeelizerSyncServicePerformer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />

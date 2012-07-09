@@ -10,7 +10,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
     {
         private static MobeelizerApplication instance;
 
-        private static MobeelizerApplication Instance
+        internal static MobeelizerApplication Instance
         {
             get
             {
@@ -51,20 +51,20 @@ namespace Com.Mobeelizer.Mobile.Wp7
             Instance.Logout();
         }
 
-        public static MobeelizerLoginStatus Login(String instance, String login, String password)
-        {
-            return Instance.Login(instance, login, password);
-        }
+        //public static MobeelizerLoginStatus Login(String instance, String login, String password)
+        //{
+        //    return Instance.Login(instance, login, password);
+        //}
 
         public static void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
         {
             Instance.Login(instance, login, password, callback);
         }
 
-        public static MobeelizerLoginStatus Login(String login, String password)
-        {
-            return Instance.Login(login, password);
-        }
+        //public static MobeelizerLoginStatus Login(String login, String password)
+        //{
+        //    return Instance.Login(login, password);
+        //}
 
         public static void Login(String login, String password, MobeelizerLoginCallback callback)
         {
@@ -76,7 +76,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             Instance.Logout();
         }
 
-        public static MobeelizerDatabase GetDatabase()
+        public static IMobeelizerDatabase GetDatabase()
         {
             return Instance.GetDatabase();
         }
@@ -86,19 +86,9 @@ namespace Com.Mobeelizer.Mobile.Wp7
             Instance.Sync(callback);
         }
 
-        public static MobeelizerSyncStatus Sync()
-        {
-            return Instance.Sync();
-        }
-
         public static void SyncAll(MobeelizerSyncCallback callback)
         {
             Instance.SyncAll(callback);
-        }
-
-        public static MobeelizerSyncStatus SyncAll()
-        {
-            return Instance.SyncAll();
         }
 
         public static MobeelizerSyncStatus CheckSyncStatus()

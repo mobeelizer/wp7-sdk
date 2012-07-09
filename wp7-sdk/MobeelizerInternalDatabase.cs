@@ -27,7 +27,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 {
                     var query = from role in db.Roles where role.Instance == instance && role.User == user select new { IsInitialSyncRequired = role.InitialSyncRequired, InstanceGuid = role.InstanceGuid };
                     var reponse = query.Single();
-                    if (reponse.InstanceGuid.Equals(instanceGuid) && !reponse.IsInitialSyncRequired)
+                    if (reponse.InstanceGuid == instanceGuid && !reponse.IsInitialSyncRequired)
                     {
                         retVal = false;
                     }

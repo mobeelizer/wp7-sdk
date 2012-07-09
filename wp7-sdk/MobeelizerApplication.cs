@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
 using Com.Mobeelizer.Mobile.Wp7.Api;
@@ -8,9 +7,10 @@ using Com.Mobeelizer.Mobile.Wp7.Configuration;
 using Com.Mobeelizer.Mobile.Wp7.Definition;
 using Microsoft.Practices.Mobile.Configuration;
 
+
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    class MobeelizerApplication
+    public class MobeelizerApplication
     {
         private const String TAG = "mobeelizer";
 
@@ -47,6 +47,18 @@ namespace Com.Mobeelizer.Mobile.Wp7
         private String application;
         
         private String versionDigest;
+
+        private MobeelizerInternalDatabase internalDatabase; 
+        
+        private IMobeelizerConnectionManager connectionManager;
+        
+        private string instance;
+        private string user;
+        private string password;
+        private string role;
+        private string instanceGuid;
+        private bool loggedIn;
+        private MobeelizerSyncStatus syncStatus;
 
         internal static MobeelizerApplication CreateApplication()
         {
@@ -120,7 +132,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         private void initApplication(string device, string entityPackage, string developmentRole, string definitionXml, int databaseVersion, string url, string stringMode)
         {
-            Debug.WriteLine("{0}\t{1}\tv{2}", TAG, "Creating Mobeelizer SDK ", Mobeelizer.VERSION);
+            Log.i(TAG, "Creating Mobeelizer SDK ", Mobeelizer.VERSION);
 
             //this.mobeelizer = mobeelizer;
             //Mobeelizer.setInstance(this);
@@ -171,11 +183,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             if (mode == MobeelizerMode.DEVELOPMENT)
             {
+                //TODO:
                // connectionManager = new MobeelizerDevelopmentConnectionManager(developmentRole);
             }
             else
             {
-                //connectionManager = new MobeelizerRealConnectionManager(this);
+                connectionManager = new MobeelizerRealConnectionManager(this);
             }
 
             try
@@ -189,68 +202,263 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             vendor = definition.Vendor;
             application = definition.Application;
-            versionDigest = definition.DigestString;
+            versionDigest = definition.Digest;
 
-            //internalDatabase = new MobeelizerInternalDatabase(this);
+            internalDatabase = new MobeelizerInternalDatabase();
 
+            //TODO:
             //fileService = new MobeelizerFileService(this);
         }
 
         internal void Logout()
         {
-            throw new NotImplementedException();
+            if (!IsLoggedIn)
+            {
+                return; // ignore
+            }
+
+            if (CheckSyncStatus().IsRunning())
+            {
+                throw new SystemException("Cannot logout when sync is in progress.");
+            }
+
+            Log.i(TAG, "logout");
+
+            this.instance = null;
+            this.user = null;
+            this.password = null;
+
+            //if (database != null) TODO: uncoment it
+            //{
+            //    database.close();
+            //    database = null;
+            //}
+
+            loggedIn = false;
         }
 
-        internal MobeelizerLoginStatus Login(string instance, string login, string password)
+        internal void Login(string instance, string user, string password, MobeelizerLoginCallback callback)
         {
-            throw new NotImplementedException();
+            if (IsLoggedIn)
+            {
+                Logout();
+            }
+
+            Log.i(TAG, "login: " + vendor + ", " + application + ", " + instance + ", " + user + ", " + password);
+
+            this.instance = instance;
+            this.user = user;
+            this.password = password;
+
+            connectionManager.Login(status =>
+            {
+                Log.i(TAG, "Login result: " + status.Status + ", " + status.Role + ", " + status.InstanceGuid);
+
+                if (status.Status != MobeelizerLoginStatus.OK)
+                {
+                    this.instance = null;
+                    this.user = null;
+                    this.password = null;
+                    callback(status.Status);
+                }
+                else
+                {
+
+                    role = status.Role;
+                    instanceGuid = status.InstanceGuid;
+
+                    loggedIn = true;
+
+                    // TODO: uncoment it
+                    //  IList<MobeelizerAndroidModel> androidModels = new List<MobeelizerAndroidModel>();
+
+                    //for (MobeelizerModel model : definitionConverter.convert(definition, entityPackage, role)) {
+                    //    androidModels.add(new MobeelizerAndroidModel((MobeelizerModelImpl) model));
+                    //}
+
+                    //database = new MobeelizerDatabaseImpl(this, androidModels);
+                    //database.open();
+
+                    //if (status.isInitialSyncRequired()) {
+                    //    sync(true);
+                    //}
+
+                    callback(MobeelizerLoginStatus.OK);
+                }
+            });
         }
 
-        internal void Login(string instance, string login, string password, MobeelizerLoginCallback callback)
+        internal void Login(string user, string password, MobeelizerLoginCallback callback)
         {
-            throw new NotImplementedException();
+            Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password, callback);
         }
 
-        internal MobeelizerLoginStatus Login(string login, string password)
+        internal bool IsLoggedIn
         {
-            throw new NotImplementedException();
+            get
+            {
+                return this.loggedIn;
+            }
         }
 
-        internal void Login(string login, string password, MobeelizerLoginCallback callback)
+        internal IMobeelizerDatabase GetDatabase()
         {
-            throw new NotImplementedException();
-        }
-
-        internal bool IsLoggedIn { get; set; }
-
-        internal MobeelizerDatabase GetDatabase()
-        {
-            throw new NotImplementedException();
+            // TODO: implement it 
+            return new MobeelizerDatabase();
         }
 
         internal void Sync(MobeelizerSyncCallback callback)
         {
-            throw new NotImplementedException();
-        }
-
-        internal MobeelizerSyncStatus Sync()
-        {
-            throw new NotImplementedException();
+            CheckIfLoggedIn();
+            Log.i(TAG, "Truncate data and start sync service.");
+            Sync(false, callback);
         }
 
         internal void SyncAll(MobeelizerSyncCallback callback)
         {
-            throw new NotImplementedException();
+            CheckIfLoggedIn();
+            Log.i(TAG, "Truncate data and start sync service.");
+            Sync(true, callback);
         }
 
-        internal MobeelizerSyncStatus SyncAll()
+        private void Sync(bool syncAll, MobeelizerSyncCallback callback)
         {
-            throw new NotImplementedException();
+            if (mode == MobeelizerMode.DEVELOPMENT || CheckSyncStatus().IsRunning())
+            {
+                Log.i(TAG, "Sync is already running - skipping.");
+                callback(MobeelizerSyncStatus.NONE);
+            }
+
+            if (!connectionManager.IsNetworkAvailable)
+            {
+                Log.i(TAG, "Sync cannot be performed - network is not available.");
+                SetSyncStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
+                callback(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
+            }
+
+            SetSyncStatus(MobeelizerSyncStatus.STARTED);
+
+            new MobeelizerSyncServicePerformer(Mobeelizer.Instance, syncAll).Sync(callback);
+        }
+
+        internal void SetSyncStatus(MobeelizerSyncStatus mobeelizerSyncStatus)
+        {
+            this.syncStatus = mobeelizerSyncStatus;
+        }
+
+        private void CheckIfLoggedIn()
+        {
+            if (!IsLoggedIn)
+            {
+                throw new InvalidOperationException("User is not logged in.");
+            }
         }
 
         internal MobeelizerSyncStatus CheckSyncStatus()
         {
-            throw new NotImplementedException();
+            CheckIfLoggedIn();
+            Log.i(TAG, "Check sync status.");
+            if (mode == MobeelizerMode.DEVELOPMENT)
+            {
+                return MobeelizerSyncStatus.NONE;
+            }
+
+            return syncStatus;
+        }
+
+        public string User
+        {
+            get
+            {
+                return this.user;
+            }
+        }
+
+        public MobeelizerInternalDatabase InternalDatabase
+        {
+            get
+            {
+                return this.internalDatabase;
+            }
+        }
+
+        public string Instance
+        {
+            get
+            {
+                return this.instance;
+            }
+        }
+
+        public string Password
+        {
+            get
+            {
+                return this.password;
+            }
+        }
+
+        public object RemoteNotificationToken { get; set; } // TODO
+
+        public string Url
+        {
+            get
+            {
+                return this.url;
+            }
+        }
+
+        public MobeelizerMode Mode {
+
+            get
+            {
+                return this.mode;
+            }
+        }
+
+        public string Vendor
+        {
+            get
+            {
+                return this.vendor;
+            }
+        }
+
+        public string Application
+        {
+            get
+            {
+                return this.application;
+            }
+        }
+
+        public string Digest
+        {
+            get
+            {
+                return this.versionDigest;
+            }
+        }
+
+        public string Device
+        {
+            get
+            {
+                return this.device;
+            }
+        }
+
+        public string DeviceIdentifier
+        {
+            get
+            {
+                return this.deviceIdentifier;
+            }
+        }
+
+        internal IMobeelizerConnectionManager GetConnectionManager()
+        {
+            return connectionManager;
         }
     }
 }
