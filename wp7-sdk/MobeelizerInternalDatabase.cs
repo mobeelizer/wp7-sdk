@@ -88,8 +88,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     roleEntity.Password = this.GetMd5(password);
                     roleEntity.Role = role;
                     roleEntity.InstanceGuid = instanceGuid;
-                    roleEntity.InitialSyncRequired = true;
-
                 }
 
                 db.SubmitChanges();

@@ -8,19 +8,29 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using System.Data.Linq.Mapping;
 
 namespace wp7_sdk_unitTests.Models
 {
+    [Table]
     public class Employee
     {
-        private String department;
+        [Column(IsPrimaryKey = true)]
+        public String guid { get; set; }
 
-        private String name;
+        [Column()]
+        public String department { get; set; }
 
-        private String position;
+        [Column()]
+        public String name { get; set; }
 
-        private double salary;
+        [Column()]
+        public String position { get; set; }
 
-        private String surname;
+        [Column()]
+        public double salary { get; set; }
+
+        [Column()]
+        public String surname { get; set; }
     }
 }

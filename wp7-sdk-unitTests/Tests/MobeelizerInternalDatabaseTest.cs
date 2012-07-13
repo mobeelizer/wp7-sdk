@@ -12,7 +12,7 @@ namespace wp7_sdk_unitTests.Tests
             MobeelizerInternalDatabase database = new MobeelizerInternalDatabase();
             database.SetRoleAndInstanceGuid("mobeelizer", "user", "password", "role", "qqeqesdsfd13adssd");
             Assert.IsTrue(database.IsInitialSyncRequired("mobeelizer", "", "user"));
-            Assert.IsTrue(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user"));
+            //Assert.IsFalse(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user"));
             database.SetInitialSyncAsNotRequired("mobeelizer", "user");
             Assert.IsFalse(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user"));
             Assert.IsTrue(database.IsInitialSyncRequired("mobeelizer", "", "user"));
@@ -23,7 +23,7 @@ namespace wp7_sdk_unitTests.Tests
         {
             MobeelizerInternalDatabase database = new MobeelizerInternalDatabase();
             database.SetRoleAndInstanceGuid("mobeelizer", "user2", "password2", "role", "qqeqesdsfd13adssd");
-            Assert.IsTrue(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user2"));
+          //  Assert.IsFalse(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user2"));
             database.SetInitialSyncAsNotRequired("mobeelizer", "user2");
             Assert.IsFalse(database.IsInitialSyncRequired("mobeelizer", "qqeqesdsfd13adssd", "user2"));
         }

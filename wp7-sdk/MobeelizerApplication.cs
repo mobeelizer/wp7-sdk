@@ -6,6 +6,9 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 using Com.Mobeelizer.Mobile.Wp7.Configuration;
 using Com.Mobeelizer.Mobile.Wp7.Definition;
 using Microsoft.Practices.Mobile.Configuration;
+using System.Threading;
+using Com.Mobeelizer.Mobile.Wp7.Model;
+using Com.Mobeelizer.Mobile.Wp7.Database;
 
 
 namespace Com.Mobeelizer.Mobile.Wp7
@@ -51,6 +54,8 @@ namespace Com.Mobeelizer.Mobile.Wp7
         private MobeelizerInternalDatabase internalDatabase; 
         
         private IMobeelizerConnectionManager connectionManager;
+
+        private MobeelizerDefinitionConverter definitionConverter = new MobeelizerDefinitionConverter();
         
         private string instance;
         private string user;
@@ -59,6 +64,8 @@ namespace Com.Mobeelizer.Mobile.Wp7
         private string instanceGuid;
         private bool loggedIn;
         private MobeelizerSyncStatus syncStatus;
+        private MobeelizerFileService fileService;
+        private MobeelizerDatabase database;
 
         internal static MobeelizerApplication CreateApplication()
         {
@@ -206,8 +213,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             internalDatabase = new MobeelizerInternalDatabase();
 
-            //TODO:
-            //fileService = new MobeelizerFileService(this);
+            fileService = new MobeelizerFileService();
+        }
+
+        internal MobeelizerFileService GetFileService()
+        {
+            return this.fileService;
         }
 
         internal void Logout()
@@ -228,16 +239,16 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.user = null;
             this.password = null;
 
-            //if (database != null) TODO: uncoment it
-            //{
-            //    database.close();
-            //    database = null;
-            //}
+            if (database != null)
+            {
+                database.Close();
+                database = null;
+            }
 
             loggedIn = false;
         }
 
-        internal void Login(string instance, string user, string password, MobeelizerLoginCallback callback)
+        internal MobeelizerLoginStatus Login(string instance, string user, string password)
         {
             if (IsLoggedIn)
             {
@@ -250,8 +261,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.user = user;
             this.password = password;
 
-            connectionManager.Login(status =>
-            {
+            MobeelizerLoginResponse status =  connectionManager.Login();
                 Log.i(TAG, "Login result: " + status.Status + ", " + status.Role + ", " + status.InstanceGuid);
 
                 if (status.Status != MobeelizerLoginStatus.OK)
@@ -259,7 +269,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     this.instance = null;
                     this.user = null;
                     this.password = null;
-                    callback(status.Status);
+                    return status.Status;
                 }
                 else
                 {
@@ -269,28 +279,28 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
                     loggedIn = true;
 
-                    // TODO: uncoment it
-                    //  IList<MobeelizerAndroidModel> androidModels = new List<MobeelizerAndroidModel>();
+                    IDictionary<String, MobeelizerModel> models = new Dictionary<String, MobeelizerModel>();
 
-                    //for (MobeelizerModel model : definitionConverter.convert(definition, entityPackage, role)) {
-                    //    androidModels.add(new MobeelizerAndroidModel((MobeelizerModelImpl) model));
-                    //}
+                    foreach (MobeelizerModel model in definitionConverter.Convert(definition, entityPackage, role))
+                    {
+                        models.Add(model.Name, model);
+                    }
 
-                    //database = new MobeelizerDatabaseImpl(this, androidModels);
-                    //database.open();
+                    database = new MobeelizerDatabase(this, models);
+                    database.Open();
 
-                    //if (status.isInitialSyncRequired()) {
-                    //    sync(true);
-                    //}
+                    if (status.InitialSyncRequired)
+                    {
+                        Sync(true);
+                    }
 
-                    callback(MobeelizerLoginStatus.OK);
+                    return MobeelizerLoginStatus.OK;
                 }
-            });
         }
 
-        internal void Login(string user, string password, MobeelizerLoginCallback callback)
+        internal MobeelizerLoginStatus Login(string user, string password)
         {
-            Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password, callback);
+            return Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password);
         }
 
         internal bool IsLoggedIn
@@ -303,42 +313,43 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         internal IMobeelizerDatabase GetDatabase()
         {
-            // TODO: implement it 
-            return new MobeelizerDatabase();
+            CheckIfLoggedIn();
+            
+            return this.database;
         }
 
-        internal void Sync(MobeelizerSyncCallback callback)
+        internal MobeelizerSyncStatus Sync()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");
-            Sync(false, callback);
+            return Sync(false);
         }
 
-        internal void SyncAll(MobeelizerSyncCallback callback)
+        internal MobeelizerSyncStatus SyncAll()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");
-            Sync(true, callback);
+            return Sync(true);
         }
 
-        private void Sync(bool syncAll, MobeelizerSyncCallback callback)
+        private MobeelizerSyncStatus Sync(bool syncAll)
         {
             if (mode == MobeelizerMode.DEVELOPMENT || CheckSyncStatus().IsRunning())
             {
                 Log.i(TAG, "Sync is already running - skipping.");
-                callback(MobeelizerSyncStatus.NONE);
+                return MobeelizerSyncStatus.NONE;
             }
-
-            if (!connectionManager.IsNetworkAvailable)
+            else if (!connectionManager.IsNetworkAvailable)
             {
                 Log.i(TAG, "Sync cannot be performed - network is not available.");
                 SetSyncStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
-                callback(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
+                return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
             }
-
-            SetSyncStatus(MobeelizerSyncStatus.STARTED);
-
-            new MobeelizerSyncServicePerformer(Mobeelizer.Instance, syncAll).Sync(callback);
+            else
+            {
+                SetSyncStatus(MobeelizerSyncStatus.STARTED);
+                return new MobeelizerSyncServicePerformer(Mobeelizer.Instance, syncAll).Sync();
+            }
         }
 
         internal void SetSyncStatus(MobeelizerSyncStatus mobeelizerSyncStatus)
@@ -459,6 +470,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
         internal IMobeelizerConnectionManager GetConnectionManager()
         {
             return connectionManager;
+        }
+
+        public string InstanceGuid
+        {
+            get
+            {
+                return this.instanceGuid;
+            }
         }
     }
 }

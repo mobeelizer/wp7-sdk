@@ -9,14 +9,18 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Com.Mobeelizer.Mobile.Wp7.Definition.Type.Helpers
+namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
-    public abstract class MobeelizerFieldTypeHelper
+    public class MobeelizerFieldAccessor
     {
-
-        internal System.Collections.Generic.IList<object> GetAccessibleTypes()
+        public MobeelizerFieldAccessor(Type type, String name)
         {
-            throw new NotImplementedException();
+            this.Type = type;
+            this.Name = name;
         }
+
+        public Type Type { get; private set; }
+
+        public string Name { get; private set; }
     }
 }

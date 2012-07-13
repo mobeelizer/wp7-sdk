@@ -26,9 +26,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.connectionService = new MobeelizerConnectionService(application);
         }
 
-       
-
-        public void Login(MobeelizerLoginResponseCallback callback)
+        public MobeelizerLoginResponse Login()
         {
             bool networkConnected = IsNetworkAvailable;
 
@@ -39,55 +37,53 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 if (roleAndInstanceGuid[0] == null)
                 {
                     Log.i(TAG, "Login failure. Missing connection failure.");          
-                    callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.MISSING_CONNECTION_FAILURE));
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.MISSING_CONNECTION_FAILURE);
                 }
                 else
                 {
                     Log.i(TAG, "Login '" + application.User + "' from database successful.");
-                    callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false));
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
                 }
             }
-
-            MobeelizerAuthenticateResponseCallback authCallback = (response) =>
-                {
-                    if (response != null)
-                    {
-                        bool initialSyncRequired = IsInitialSyncRequired(application, response.InstanceGuid);
-
-                        SetRoleAndInstanceGuidInDatabase(application, response.Role, response.InstanceGuid);
-                        Log.i(TAG, "Login '" + application.User + "' successful.");
-                        callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, response.InstanceGuid, response.Role, initialSyncRequired));
-                    }
-                    else
-                    {
-                        Log.i(TAG, "Login failure. Authentication error.");
-                        ClearRoleAndInstanceGuidInDatabase(application);
-                        callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.AUTHENTICATION_FAILURE));
-                    }
-                };
 
             try
             {
+                IMobeelizerAuthenticateResponse response = null;
                 if (application.RemoteNotificationToken != null)
                 {
-                    connectionService.Authenticate(application.User, application.Password, application.RemoteNotificationToken, authCallback);
+                     response = connectionService.Authenticate(application.User, application.Password, application.RemoteNotificationToken);
                 }
                 else
                 {
-                    connectionService.Authenticate(application.User, application.Password, authCallback);
+                    response = connectionService.Authenticate(application.User, application.Password);
+                }
+
+                if (response != null)
+                {
+                    bool initialSyncRequired = IsInitialSyncRequired(application, response.InstanceGuid);
+
+                    SetRoleAndInstanceGuidInDatabase(application, response.Role, response.InstanceGuid);
+                    Log.i(TAG, "Login '" + application.User + "' successful.");
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, response.InstanceGuid, response.Role, initialSyncRequired);
+                }
+                else
+                {
+                    Log.i(TAG, "Login failure. Authentication error.");
+                    ClearRoleAndInstanceGuidInDatabase(application);
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
                 }
             }
-            catch (Exception) // TODO: change Exception to better one. 
+            catch (InvalidOperationException e)
             {
+                Log.i(TAG, e.Message);
                 String[] roleAndInstanceGuid = GetRoleAndInstanceGuidFromDatabase(application);
-
                 if (roleAndInstanceGuid[0] == null)
                 {
-                    callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.CONNECTION_FAILURE));
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.CONNECTION_FAILURE);
                 }
                 else
                 {
-                    callback(new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false));
+                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
                 }
             }
         }
@@ -120,40 +116,40 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public void SendSyncAllRequest(MobeelizerSyncRequestCallback callback)
+        public String SendSyncAllRequest()
         {
             try
             {
-                connectionService.SendSyncAllRequest(callback);
+                return connectionService.SendSyncAllRequest();
             }
             catch (IOException e)
             {
-                Log.i(TAG, e.Message);
+                throw new InvalidOperationException(e.Message, e);
             }
         }
 
 
-        public void SendSyncDiffRequest(IsolatedStorageFileStream outputFile, MobeelizerSyncRequestCallback callback)
+        public String SendSyncDiffRequest(Others.File outputFile)
         {
             try
             {
-                connectionService.SendSyncDiffRequest(outputFile, callback);
+                return connectionService.SendSyncDiffRequest(outputFile);
             }
             catch (IOException e)
             {
-                Log.i(TAG, e.Message);
+                throw new InvalidOperationException(e.Message, e);
             }
         }
 
-        public void GetSyncData(String ticket, MobeelizerGetSyncDataCallback callback)
+        public Others.File GetSyncData(String ticket)
         {
             try
             {
-                connectionService.GetSyncData(ticket, callback);
+                return connectionService.GetSyncData(ticket);
             }
             catch (IOException e)
             {
-                Log.i(TAG, e.Message);
+                throw new InvalidOperationException(e.Message, e);
             }
         }
 

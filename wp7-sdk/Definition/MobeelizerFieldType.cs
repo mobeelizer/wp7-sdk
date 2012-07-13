@@ -1,6 +1,7 @@
 ﻿using System;
-using Com.Mobeelizer.Mobile.Wp7.Definition.Type.Helpers;
+using Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers;
 using System.Collections.Generic;
+using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
@@ -17,7 +18,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
 
     public static class MobeelizerFieldTypeExtension
     {
-        private static Dictionary<MobeelizerFieldType, MobeelizerFieldTypeHelper> map = new Dictionary<MobeelizerFieldType, MobeelizerFieldTypeHelper>()
+        private static Dictionary<MobeelizerFieldType, MobeelizerFieldTypeHelper> typesMap = new Dictionary<MobeelizerFieldType, MobeelizerFieldTypeHelper>()
             {
                 {MobeelizerFieldType.TEXT, new MobeelizerTextFieldTypeHelper()},
                 {MobeelizerFieldType.INTEGER, new MobeelizerIntegerFieldTypeHelper()},
@@ -31,6 +32,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
         public static IList<Object> GetAccessibleTypes(this MobeelizerFieldType fieldType)
         {
             return null;
+        }
+
+        public static void SetValueFromMapToDatabase(this MobeelizerFieldType fieldType, IDictionary<String, object> values,  IDictionary<String, String> map, MobeelizerFieldAccessor field, bool required,  IDictionary<String, String> options, MobeelizerErrorsHolder errors) 
+        {
+            typesMap[fieldType].SetValueFromMapToDatabase(values, map, field, required, options, errors);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="wp7SDKtest" conflictMode="OVERWRITE" vendor="TomaszLandowski">
+<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="test" conflictMode="OVERWRITE" vendor="TomaszLandowski">
   <devices>
     <device name="mobile"/>
   </devices>
@@ -10,31 +10,14 @@
     <role device="mobile" group="users"/>
   </roles>
   <models>
-    <model name="Department">
-      <fields>
-        <field name="name" required="false" type="TEXT">
-          <credentials>
-            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
-          </credentials>
-        </field>
-        <field name="internalNumber" required="true" type="INTEGER">
-          <credentials>
-            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
-          </credentials>
-        </field>
-      </fields>
-      <credentials>
-        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
-      </credentials>
-    </model>
     <model name="Employee">
       <fields>
-        <field name="name" required="true" type="TEXT">
+        <field name="surname" required="true" type="TEXT">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
           <options>
-            <option name="maxLength">30</option>
+            <option name="maxLength">40</option>
           </options>
         </field>
         <field name="salary" required="true" type="DECIMAL">
@@ -60,17 +43,34 @@
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
           <options>
-            <option name="analyzeConflict">true</option>
             <option name="model">Department</option>
+            <option name="analyzeConflict">true</option>
           </options>
         </field>
-        <field name="surname" required="true" type="TEXT">
+        <field name="name" required="true" type="TEXT">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
           <options>
-            <option name="maxLength">40</option>
+            <option name="maxLength">30</option>
           </options>
+        </field>
+      </fields>
+      <credentials>
+        <credential createAllowed="ALL" deleteAllowed="ALL" readAllowed="ALL" resolveConflictAllowed="true" role="users-mobile" updateAllowed="ALL"/>
+      </credentials>
+    </model>
+    <model name="Department">
+      <fields>
+        <field name="name" required="false" type="TEXT">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+        </field>
+        <field name="internalNumber" required="true" type="INTEGER">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
         </field>
       </fields>
       <credentials>

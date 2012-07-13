@@ -155,10 +155,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
                     fieldDef.Credentials.Add(ParseModelFieldCredentials(credential));
                 }
             }
+
             XElement options = field.Element(XName.Get(MobeelizerDefinitionTag.OPTIONS_TAG, MobeelizerDefinitionTag.NAMESPACE));
+            fieldDef.Options = new Dictionary<string, string>();
             if (options != null)
             {
-                fieldDef.Options = new Dictionary<string, string>();
                 foreach (XElement option in options.Elements(XName.Get(MobeelizerDefinitionTag.OPTION_TAG, MobeelizerDefinitionTag.NAMESPACE)))
                 {
                     String name = option.Attribute(MobeelizerDefinitionTag.NAME_TAG).Value;

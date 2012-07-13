@@ -1,17 +1,18 @@
 ﻿
+using System;
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
     public interface IMobeelizerConnectionService
     {
-        void Authenticate(string user, string password, object remoteNotifycationToken, MobeelizerAuthenticateResponseCallback callback);
+        IMobeelizerAuthenticateResponse Authenticate(string user, string password, object remoteNotifycationToken);
 
-        void Authenticate(string user, string password, MobeelizerAuthenticateResponseCallback callback);
+        IMobeelizerAuthenticateResponse Authenticate(string user, string password);
 
-        void SendSyncAllRequest(MobeelizerSyncRequestCallback callback);
+        String SendSyncAllRequest();
 
-        void SendSyncDiffRequest(System.IO.IsolatedStorage.IsolatedStorageFileStream outputFile, MobeelizerSyncRequestCallback callback);
+        String SendSyncDiffRequest(Others.File outputFile);
 
-        void GetSyncData(string ticket, MobeelizerGetSyncDataCallback callback);
+        Others.File GetSyncData(string ticket);
 
         void ConfirmTask(string ticket);
 

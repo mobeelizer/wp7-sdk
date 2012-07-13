@@ -8,21 +8,20 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Com.Mobeelizer.Mobile.Wp7.Api;
 using System.Data.Linq.Mapping;
 
-namespace wp7_sdk_unitTests.Models
+namespace wp7_sdk_unitTests.Models.test2Production
 {
     [Table]
-    public class Department : MobeelizerWp7Model
+    public class Blog
     {
         [Column(IsPrimaryKey = true)]
-        public override String guid { get; set; }
+        public String guid { get; set; }
 
         [Column()]
-        public String name { get; set; }
+        public String content { get; set; }
 
         [Column()]
-        public int internalNumber { get; set; }
+        public String title { get; set; }
     }
 }

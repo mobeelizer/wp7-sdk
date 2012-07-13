@@ -48,6 +48,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IsolatedStorageExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Silverlight.Testing">
@@ -74,6 +75,8 @@
     </Compile>
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\test2Production\Blog.cs" />
+    <Compile Include="Models\test2\Employee.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Definition\MobeelizerDefinitionParserTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerDeviceDefinitionTest.cs" />
@@ -109,13 +112,19 @@
     <Content Include="Background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Definitions\ModelsTest1.xml" />
     <Content Include="Resources\Definitions\definition_1.xml" />
     <Content Include="Resources\Definitions\definition_2.xml" />
     <Content Include="Resources\Definitions\definition_3.xml" />
     <Content Include="Resources\Definitions\ModelsTest.xml" />
+    <Content Include="Resources\Definitions\ModelsTest2.xml" />
+    <Content Include="Resources\Definitions\test2.xml" />
+    <Content Include="Resources\Definitions\test2_production.xml" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\wp7-sdk\wp7-sdk.csproj">
       <Project>{D914AA24-17B0-4EB1-852B-243908268CBA}</Project>

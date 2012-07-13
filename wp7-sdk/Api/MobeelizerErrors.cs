@@ -9,9 +9,9 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Com.Mobeelizer.Mobile.Wp7.Definition.Type.Helpers
+namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
-    public class MobeelizerFileFieldTypeHelper : MobeelizerFieldTypeHelper
+    public class MobeelizerErrors
     {
 
     }

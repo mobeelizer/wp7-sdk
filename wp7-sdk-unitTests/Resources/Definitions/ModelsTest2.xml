@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="wp7SDKtest" conflictMode="OVERWRITE" vendor="TomaszLandowski">
+<application xmlns="http://schema.mobeelizer.com/application" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" application="test1" conflictMode="OVERWRITE" vendor="mobeelizer">
   <devices>
     <device name="mobile"/>
   </devices>
@@ -12,12 +12,12 @@
   <models>
     <model name="Department">
       <fields>
-        <field name="name" required="false" type="TEXT">
+        <field name="internalNumber" required="true" type="INTEGER">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
         </field>
-        <field name="internalNumber" required="true" type="INTEGER">
+        <field name="name" required="false" type="TEXT">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
@@ -29,22 +29,21 @@
     </model>
     <model name="Employee">
       <fields>
+        <field name="department" required="false" type="BELONGS_TO">
+          <credentials>
+            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
+          </credentials>
+          <options>
+            <option name="model">Department</option>
+            <option name="analyzeConflict">true</option>
+          </options>
+        </field>
         <field name="name" required="true" type="TEXT">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
           <options>
             <option name="maxLength">30</option>
-          </options>
-        </field>
-        <field name="salary" required="true" type="DECIMAL">
-          <credentials>
-            <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
-          </credentials>
-          <options>
-            <option name="scale">2</option>
-            <option name="includeMinValue">false</option>
-            <option name="includeMaxValue">false</option>
           </options>
         </field>
         <field name="position" required="true" type="TEXT">
@@ -55,13 +54,14 @@
             <option name="maxLength">50</option>
           </options>
         </field>
-        <field name="department" required="false" type="BELONGS_TO">
+        <field name="salary" required="true" type="DECIMAL">
           <credentials>
             <credential createAllowed="ALL" readAllowed="ALL" role="users-mobile" updateAllowed="ALL"/>
           </credentials>
           <options>
-            <option name="analyzeConflict">true</option>
-            <option name="model">Department</option>
+            <option name="scale">2</option>
+            <option name="includeMinValue">false</option>
+            <option name="includeMaxValue">false</option>
           </options>
         </field>
         <field name="surname" required="true" type="TEXT">

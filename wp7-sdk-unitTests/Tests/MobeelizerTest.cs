@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Com.Mobeelizer.Mobile.Wp7;
 using System.Threading;
 using Com.Mobeelizer.Mobile.Wp7.Api;
+using wp7_sdk_unitTests.Models;
+using System.Linq;
 
 namespace wp7_sdk_unitTests.Tests
 {
@@ -29,13 +31,8 @@ namespace wp7_sdk_unitTests.Tests
         public void Login()
         {
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
-            Mobeelizer.Login("user", "password", (status) => 
-            {
-                loginStatus = status;
-         //       resetEvent.Set();
-            });
-        //    resetEvent.WaitOne();
-          //  Assert.AreEqual(loginStatus, MobeelizerLoginStatus.OK);
+            loginStatus  = Mobeelizer.Login("user", "password");
+            Assert.AreEqual(loginStatus, MobeelizerLoginStatus.OK);
         }
 
         ManualResetEvent allDone = new ManualResetEvent(false);
@@ -44,26 +41,31 @@ namespace wp7_sdk_unitTests.Tests
         public void Login_02()
         {
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
-           // ManualResetEvent resetEvent = new ManualResetEvent(false);
-            Mobeelizer.Login("user", "wrongpassword", (status) =>
-            {
-                loginStatus = status;
-                allDone.Set();
-            });
-      //      allDone.WaitOne();
-      //      Assert.AreEqual(loginStatus, MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
+            loginStatus = Mobeelizer.Login("user", "passsssword");
+            Assert.AreEqual(loginStatus, MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
         }
 
         [TestMethod]
         public void SyncAll()
         {
-            Mobeelizer.Login("user", "password", (s) =>
-                {
-                    Mobeelizer.SyncAll((MobeelizerSyncStatus status) =>
-                        {
+            Mobeelizer.Login("user", "password");
+            IMobeelizerDatabase db = Mobeelizer.GetDatabase();
+            var table = db.GetModels<Department>();
 
-                        });
-                });
+            //Department de = new Department();
+            //de.internalNumber = 1;
+            //de.name = "ddd";
+
+            //table.InsertOnSubmit(de);
+            //db.Commit();
+
+            var result = from departement in db.GetModels<Department>() select departement;
+            foreach (Department dep in result)
+            {
+
+            }
+
+            MobeelizerSyncStatus status = Mobeelizer.SyncAll();
         }
     }
 }

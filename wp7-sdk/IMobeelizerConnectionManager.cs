@@ -6,13 +6,13 @@ namespace Com.Mobeelizer.Mobile.Wp7
 {
     public interface IMobeelizerConnectionManager
     {
-        void Login(MobeelizerLoginResponseCallback callback);
+        MobeelizerLoginResponse Login();
 
-        void SendSyncAllRequest(MobeelizerSyncRequestCallback callback);
+        String SendSyncAllRequest();
 
-        void SendSyncDiffRequest(IsolatedStorageFileStream outputFile, MobeelizerSyncRequestCallback callback);
+        String SendSyncDiffRequest(Others.File outputFile);
 
-        void GetSyncData(String ticket, MobeelizerGetSyncDataCallback callback);
+        Others.File GetSyncData(String ticket);
 
         bool IsNetworkAvailable { get; }
 

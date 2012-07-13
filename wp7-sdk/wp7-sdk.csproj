@@ -46,6 +46,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>libs\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SharpZipLib.WindowsPhone7">
+      <HintPath>libs\SharpZipLib.WindowsPhone7.dll</HintPath>
+    </Reference>
     <Reference Include="system.data.linq" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -57,7 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\MobeelizerCredential.cs" />
+    <Compile Include="Api\MobeelizerErrors.cs" />
+    <Compile Include="Database\MobeelizerTable.cs" />
+    <Compile Include="Database\MobeelizerTableEnumerator.cs" />
+    <Compile Include="Model\MobeelizerField.cs" />
     <Compile Include="Api\MobeelizerMode.cs" />
+    <Compile Include="Api\IMobeelizerModel.cs" />
+    <Compile Include="Model\MobeelizerModel.cs" />
+    <Compile Include="Api\MobeelizerWp7Model.cs" />
     <Compile Include="Api\MobeelizerSyncStatus.cs" />
     <Compile Include="Api\IMobeelizerDatabase.cs" />
     <Compile Include="Api\MobeelizerLoginStatus.cs" />
@@ -74,7 +84,10 @@
     <Compile Include="Connection\MobeelizerSynchronizationStatus.cs" />
     <Compile Include="Connection\MobeelizerSyncRequestCallback.cs" />
     <Compile Include="Definition\IMobeelizerDefinition.cs" />
-    <Compile Include="Log.cs" />
+    <Compile Include="Definition\MobeelizerDefinitionConverter.cs" />
+    <Compile Include="Definition\MobeelizerErrorsHolder.cs" />
+    <Compile Include="Others\File.cs" />
+    <Compile Include="Others\Log.cs" />
     <Compile Include="Definition\MobeelizerApplicationDefinition.cs" />
     <Compile Include="Definition\MobeelizerDefinitionParser.cs" />
     <Compile Include="Definition\MobeelizerDefinitionTag.cs" />
@@ -86,29 +99,40 @@
     <Compile Include="Definition\MobeelizerModelFieldCredentialsDefinition.cs" />
     <Compile Include="Definition\MobeelizerModelFieldDefinition.cs" />
     <Compile Include="Definition\MobeelizerRoleDefinition.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerBelongsToFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerBooleanFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerDateFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerDecimalFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerFileFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerIntegerFieldTypeHelper.cs" />
-    <Compile Include="Definition\Type\Helpers\MobeelizerTextFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerBelongsToFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerBooleanFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerDateFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerDecimalFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerFileFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerIntegerFieldTypeHelper.cs" />
+    <Compile Include="Definition\Types\Helpers\MobeelizerTextFieldTypeHelper.cs" />
     <Compile Include="Mobeelizer.cs" />
     <Compile Include="MobeelizerApplication.cs" />
     <Compile Include="Api\MobeelizerLoginCallback.cs" />
     <Compile Include="IMobeelizerConnectionManager.cs" />
-    <Compile Include="MobeelizerDatabase.cs" />
+    <Compile Include="Database\MobeelizerDatabase.cs" />
+    <Compile Include="Database\MobeelizerDatabaseContext.cs" />
     <Compile Include="MobeelizerDataFileService.cs" />
+    <Compile Include="MobeelizerFileService.cs" />
     <Compile Include="MobeelizerInternalDatabase.cs" />
     <Compile Include="MobeelizerInternalDatabaseContext.cs" />
     <Compile Include="MobeelizerLoginResponse.cs" />
     <Compile Include="MobeelizerLoginResponseCallback.cs" />
+    <Compile Include="Database\MobeelizerModelMetadata.cs" />
     <Compile Include="MobeelizerRealConnectionManager.cs" />
     <Compile Include="MobeelizerRoleEntity.cs" />
     <Compile Include="MobeelizerSyncServicePerformer.cs" />
+    <Compile Include="Model\MobeelizerFieldAccessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sync\MobeelizerInputData.cs" />
+    <Compile Include="Sync\MobeelizerInputDataEnumerable.cs" />
+    <Compile Include="Sync\MobeelizerJsonEntity.cs" />
+    <Compile Include="Sync\MobeelizerOutputData.cs" />
+    <Compile Include="MobeelizerSyncFileIterator.cs" />
+    <Compile Include="MobeelizerSyncEnumerable.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions />
