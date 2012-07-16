@@ -6,10 +6,11 @@ using Newtonsoft.Json.Linq;
 using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public class MobeelizerConnectionService : IMobeelizerConnectionService
+    internal class MobeelizerConnectionService : IMobeelizerConnectionService
     {
         private const String DEFAULT_PRODUCTION_URL = "http://cloud.mobeelizer.com/sync";
 
@@ -17,7 +18,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         private MobeelizerApplication application;
 
-        public MobeelizerConnectionService(MobeelizerApplication application)
+        internal MobeelizerConnectionService(MobeelizerApplication application)
         {
             this.application = application;
         }
@@ -69,7 +70,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     }
                 }
             }
-                 
+            catch (JsonException e)
+            {
+                throw new InvalidOperationException(e.Message, e);
+            }
         }
 
         private JObject GetJsonObject(WebResponse response)
@@ -241,8 +245,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             for (int i = 0; i < 100; i++)
             {
                 WebRequest request = WebRequest.Create(GetUrl(String.Format("/checkStatus?ticket={0}&aaa={1}", ticket, DateTime.Now.Ticks)));
-
-                (request as HttpWebRequest).AllowReadStreamBuffering = false;
                 request.Method = "GET";
                 SetHeaders(request, false, true);
 
@@ -331,7 +333,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
         internal JObject GetJsonResponse(WebRequest request)
         {
             JObject result = null;
-            WebException exception = null;
+            Exception exception = null;
             try
             {
                 request.BeginGetResponse(a =>
@@ -347,13 +349,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     {
                         exception = e;
                     }
+                    catch (JsonReaderException e)
+                    {
+                        exception = e;
+                    }
                     allDone.Set();
                 }, null);
             }
             catch (WebException e)
             {
                 throw new IOException(e.Message, e);
-             
+
             }
 
             allDone.WaitOne();

@@ -10,21 +10,22 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 using Com.Mobeelizer.Mobile.Wp7.Model;
+using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
-    public class MobeelizerBelongsToFieldTypeHelper : MobeelizerFieldTypeHelper
+    internal class MobeelizerBelongsToFieldTypeHelper : MobeelizerFieldTypeHelper
     {
-        protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
+        protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, String value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            String stringValue = (String)ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
+            String stringValue = value;
 
             if (!errors.IsValid)
             {
                 return;
             }
 
-            if (!Mobeelizer.GetDatabase().Exists(options["model"], stringValue)) 
+            if (!((MobeelizerDatabase)Mobeelizer.GetDatabase()).Exists(options["model"], stringValue)) 
             {
                 errors.AddFieldMissingReferenceError(field.Name, stringValue);
                 return;
@@ -33,14 +34,26 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             values.Add(field.Name, stringValue);
         }
 
-        private object ConvertFromEntityValueToDatabaseValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
-        {
-            throw new NotImplementedException();
-        }
-
         protected override void SetNullValueFromMapToDatabase(IDictionary<string, object> values, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             values.Add(field.Name, (String)null);
+        }
+
+
+        protected override void ValidateValue(object value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
+        {
+            String stringValue = (String)value;
+
+            if (!errors.IsValid)
+            {
+                return;
+            }
+
+            if (!((MobeelizerDatabase)Mobeelizer.GetDatabase()).Exists(options["model"], stringValue))
+            {
+                errors.AddFieldMissingReferenceError(field.Name, stringValue);
+                return;
+            }
         }
     }
 }

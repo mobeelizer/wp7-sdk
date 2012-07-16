@@ -13,9 +13,8 @@ using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
-    public class MobeelizerDateFieldTypeHelper : MobeelizerFieldTypeHelper
+    internal class MobeelizerDateFieldTypeHelper : MobeelizerFieldTypeHelper
     {
-
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             DateTime date = ConvertFromEntityValueToDatabaseValue(field, value, options, errors);

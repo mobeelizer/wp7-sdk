@@ -4,7 +4,7 @@ using System;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public interface IMobeelizerConnectionManager
+    internal interface IMobeelizerConnectionManager
     {
         MobeelizerLoginResponse Login();
 

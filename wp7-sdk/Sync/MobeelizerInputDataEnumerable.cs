@@ -14,11 +14,11 @@ using System.IO;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Sync
 {
-    public class MobeelizerInputDataEnumerable : IEnumerable<MobeelizerJsonEntity>
+    internal class MobeelizerInputDataEnumerable : IEnumerable<MobeelizerJsonEntity>
     {
         private MobeelizerInputDataEnumerator enumerator;
 
-        public MobeelizerInputDataEnumerable(MobeelizerInputData mobeelizerInputData)
+        internal MobeelizerInputDataEnumerable(MobeelizerInputData mobeelizerInputData)
         {
             this.enumerator = new MobeelizerInputDataEnumerator(mobeelizerInputData.GetDataInputStream());
         }

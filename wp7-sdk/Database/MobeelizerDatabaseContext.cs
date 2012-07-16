@@ -15,15 +15,19 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
     public class MobeelizerDatabaseContext : DataContext
     {
+        public MobeelizerDatabaseContext(String connectinString) :
+            base(connectinString)
+        {
+        }
+
         public MobeelizerDatabaseContext(String instanceGuid, String user) :
             base(String.Format("DataSource=isostore:/{0}_{1}_data.sdf", instanceGuid, user))
         {
-            
         }
 
         internal ITable<T> GetModels<T>() where T: MobeelizerWp7Model
         {
-            return new MobeelizerTable<T>(this.GetTable<T>());
+            return new MobeelizerTable<T>(this.GetTable<T>(), this);
         }
 
         public Table<MobeelizerModelMetadata> ModelMetadata
@@ -32,6 +36,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             {
                 return GetTable<MobeelizerModelMetadata>();
             }
+        }
+
+        public override void SubmitChanges(ConflictMode failureMode)
+        {
+            
+            base.SubmitChanges(failureMode);
         }
     }
 }

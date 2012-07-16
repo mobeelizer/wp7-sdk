@@ -11,16 +11,16 @@ using System.Windows.Shapes;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
-    public class MobeelizerFieldAccessor
+    internal class MobeelizerFieldAccessor
     {
-        public MobeelizerFieldAccessor(Type type, String name)
+        internal MobeelizerFieldAccessor(Type type, String name)
         {
             this.Type = type;
             this.Name = name;
         }
 
-        public Type Type { get; private set; }
+        internal Type Type { get; private set; }
 
-        public string Name { get; private set; }
+        internal string Name { get; private set; }
     }
 }

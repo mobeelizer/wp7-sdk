@@ -9,14 +9,15 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Data.Linq.Mapping;
+using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace wp7_sdk_unitTests.Models
 {
     [Table]
-    public class Employee
+    public class Employee : MobeelizerWp7Model
     {
         [Column(IsPrimaryKey = true)]
-        public String guid { get; set; }
+        public override String guid { get; set; }
 
         [Column()]
         public String department { get; set; }

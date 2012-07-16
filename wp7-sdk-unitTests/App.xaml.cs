@@ -12,6 +12,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using wp7_sdk_unitTests.Helpers.Mock;
 
 namespace wp7_sdk_unitTests
 {
@@ -63,6 +64,7 @@ namespace wp7_sdk_unitTests
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            WebRequest.RegisterPrefix("ut", new UTWebRequestCreate());
          //   IsolatedStorageExplorer.Explorer.Start("localhost");
         }
 

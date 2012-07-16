@@ -8,7 +8,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Configuration
         /// Get the connection Items.
         /// </summary>
         [ConfigurationProperty("properties")]
-        public MobeelizerPropertiesCollection AppSettings
+        internal MobeelizerPropertiesCollection AppSettings
         {
             get
             {

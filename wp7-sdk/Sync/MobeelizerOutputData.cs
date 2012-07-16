@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Sync
 {
-    public class MobeelizerOutputData
+    internal class MobeelizerOutputData
     {
         Others.File dataFile;
 
@@ -17,7 +17,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
 
         private List<String> deletedFiles;
 
-        public MobeelizerOutputData(Others.File file, Others.File tmpFile)
+        internal MobeelizerOutputData(Others.File file, Others.File tmpFile)
         {
             this.dataFile = tmpFile;
             outputStream = new StreamWriter(tmpFile.OpenToWrite());

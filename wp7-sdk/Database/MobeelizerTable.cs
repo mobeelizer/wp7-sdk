@@ -11,9 +11,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
     {
         private ITable<T> table;
 
-        internal MobeelizerTable(ITable<T> table)
+        private MobeelizerDatabaseContext db;
+
+        internal MobeelizerTable(ITable<T> table, MobeelizerDatabaseContext db)
         {
             this.table = table;
+            this.db = db;
         }
    
         public void Attach(T entity)
@@ -23,7 +26,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 
         public void DeleteOnSubmit(T entity)
         {
-            this.table.DeleteOnSubmit(entity);
+            String model = entity.GetType().Name;
+            String guid = (entity as MobeelizerWp7Model).guid;
+            var query = from meta in db.ModelMetadata where meta.Model == model && meta.Guid == guid select meta;
+            MobeelizerModelMetadata metadata = query.Single();
+            metadata.Modyfied = 1;
+            metadata.Deleted = 1;
+            //this.table.DeleteOnSubmit(entity);
         }
 
         public void InsertOnSubmit(T entity)
@@ -33,7 +42,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new MobeelizerTableEnumerator<T>(table.GetEnumerator());
+            return table.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -50,81 +59,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             get 
             {
-                System.Linq.Expressions.Expression expression = this.table.Expression;
-                object value = (expression as ConstantExpression).Value;
-                return expression;  
+                var query = from record in this.table join m in db.ModelMetadata on record.guid equals m.Guid where m.Deleted == 0 select record;
+                return query.Expression;
             }
         }
 
         public IQueryProvider Provider
         {
-            get { return new MobeelizerQueryProvider(this.table.Provider); }
+            get { return this.table.Provider; }
         }
     }
 
 
-    public class MobeelizerQueryProvider : IQueryProvider
-    {
-        private IQueryProvider provider;
-
-        internal MobeelizerQueryProvider(IQueryProvider provider)
-        {
-            this.provider = provider;
-        }
-
-        public IQueryable<TElement> CreateQuery<TElement>(System.Linq.Expressions.Expression expression)
-        {
-            return new MobeelizerQuerable<TElement>(this.provider.CreateQuery<TElement>(expression));
-        }
-
-        public IQueryable CreateQuery(System.Linq.Expressions.Expression expression)
-        {
-            return this.provider.CreateQuery(expression);
-        }
-
-        public TResult Execute<TResult>(System.Linq.Expressions.Expression expression)
-        {
-            return this.provider.Execute<TResult>(expression);
-        }
-
-        public object Execute(System.Linq.Expressions.Expression expression)
-        {
-            return this.provider.Execute(expression);
-        }
-    }
-
-    public class MobeelizerQuerable<T> : IQueryable<T>
-    {
-        private IQueryable<T> querable;
-
-        internal MobeelizerQuerable(IQueryable<T> querable)
-        {
-            this.querable = querable;
-        }
-
-        public IEnumerator<T> GetEnumerator()
-        {
-            return querable.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return querable.GetEnumerator();
-        }
-
-        public Type ElementType
-        {
-            get { return querable.ElementType; }
-        }
-
-        public System.Linq.Expressions.Expression Expression
-        {
-            get { return this.querable.Expression; }
-        }
-
-        public IQueryProvider Provider
-        {
-            get { return this.querable.Provider; }
-        }
-    }
 }

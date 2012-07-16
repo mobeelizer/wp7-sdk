@@ -3,5 +3,5 @@ using Com.Mobeelizer.Mobile.Wp7.Others;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public delegate void MobeelizerGetSyncDataCallback(File inputFile);
+    internal delegate void MobeelizerGetSyncDataCallback(File inputFile);
 }

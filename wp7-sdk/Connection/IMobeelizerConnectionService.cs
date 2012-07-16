@@ -1,8 +1,8 @@
-﻿
-using System;
+﻿using System;
+
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public interface IMobeelizerConnectionService
+    internal interface IMobeelizerConnectionService
     {
         IMobeelizerAuthenticateResponse Authenticate(string user, string password, object remoteNotifycationToken);
 

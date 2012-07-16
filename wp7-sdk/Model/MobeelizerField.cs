@@ -14,7 +14,7 @@ using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
-    public class MobeelizerField
+    internal class MobeelizerField
     {
         private MobeelizerModelFieldDefinition field;
         
@@ -22,7 +22,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         
         MobeelizerFieldAccessor accesor;
 
-        public MobeelizerField(Type type, Definition.MobeelizerModelFieldDefinition radField, Definition.MobeelizerModelFieldCredentialsDefinition fieldCredentials)
+        internal MobeelizerField(Type type, Definition.MobeelizerModelFieldDefinition radField, Definition.MobeelizerModelFieldCredentialsDefinition fieldCredentials)
         {
             this.field = radField;
             this.fieldCredentials = fieldCredentials;
@@ -31,13 +31,18 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             this.accesor = new MobeelizerFieldAccessor(type, radField.Name);
         }
 
-        public string Name { get; private set; }
+        internal string Name { get; private set; }
 
-        public MobeelizerFieldType FieldType { get; private set; }
+        internal MobeelizerFieldType FieldType { get; private set; }
 
         internal void SetValueFromMapToDatabase(IDictionary<string, object> values, IDictionary<string, string> map, MobeelizerErrorsHolder errors)
         {
             FieldType.SetValueFromMapToDatabase(values, map, accesor ,  this.field.IsRequired, field.Options ,errors);
+        }
+
+        internal void Validate(Dictionary<string, object> values, MobeelizerErrorsHolder errors)
+        {
+            FieldType.Validate(values, accesor, this.field.IsRequired, field.Options, errors);
         }
     }
 }

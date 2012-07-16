@@ -51,24 +51,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
             Instance.Logout();
         }
 
-        //public static MobeelizerLoginStatus Login(String instance, String login, String password)
-        //{
-        //    return Instance.Login(instance, login, password);
-        //}
-
-        public MobeelizerLoginStatus Login(String instance, String login, String password)
+        public void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
         {
-            return Instance.Login(instance, login, password);
+            Instance.Login(instance, login, password, callback);
         }
 
-        //public static MobeelizerLoginStatus Login(String login, String password)
-        //{
-        //    return Instance.Login(login, password);
-        //}
-
-        public static MobeelizerLoginStatus Login(String login, String password)
+        public static void Login(String login, String password, MobeelizerLoginCallback callback)
         {
-            return Instance.Login(login, password);
+            Instance.Login(login, password, callback);
         }
 
         public static void Logout()
@@ -81,14 +71,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
             return Instance.GetDatabase();
         }
 
-        public static MobeelizerSyncStatus Sync()
+        public static void Sync(MobeelizerSyncCallback callback)
         {
-            return Instance.Sync();
+            Instance.Sync(callback);
         }
 
-        public static MobeelizerSyncStatus SyncAll()
+        public static void SyncAll(MobeelizerSyncCallback callback)
         {
-            return Instance.SyncAll();
+            Instance.SyncAll(callback);
         }
 
         public static MobeelizerSyncStatus CheckSyncStatus()

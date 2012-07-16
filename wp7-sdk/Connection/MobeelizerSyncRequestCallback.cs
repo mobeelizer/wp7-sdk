@@ -11,5 +11,5 @@ using System.Windows.Shapes;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public delegate void MobeelizerSyncRequestCallback(String ticket);
+    internal delegate void MobeelizerSyncRequestCallback(String ticket);
 }

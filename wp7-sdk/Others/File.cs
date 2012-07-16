@@ -1,28 +1,19 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.IO.IsolatedStorage;
 using System.IO;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Others
 {
-    public class File
+    internal class File
     {
         private String path;
 
-        public File(String path)
+        internal File(String path)
         {
             this.path = path;
         }
 
-        public void Create()
+        internal void Create()
         {
             using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
             {
@@ -45,7 +36,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Others
             }
         }
 
-        public IsolatedStorageFileStream OpenToRead()
+        internal IsolatedStorageFileStream OpenToRead()
         {
             IsolatedStorageFileStream stream = null;
             using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
@@ -62,7 +53,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Others
             return stream;
         }
 
-        public IsolatedStorageFileStream OpenToWrite()
+        internal IsolatedStorageFileStream OpenToWrite()
         {
             IsolatedStorageFileStream stream = null;
             using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
@@ -79,7 +70,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Others
             return stream;
         }
 
-        public void Delete()
+        internal void Delete()
         {
             using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
             {

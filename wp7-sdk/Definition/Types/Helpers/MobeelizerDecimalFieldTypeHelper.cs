@@ -13,7 +13,7 @@ using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
-    public class MobeelizerDecimalFieldTypeHelper : MobeelizerFieldTypeHelper
+    internal class MobeelizerDecimalFieldTypeHelper : MobeelizerFieldTypeHelper
     {
 
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
@@ -88,6 +88,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
         }
 
+        protected override void ValidateValue(object value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
+        {
+            ValidateValue(field, (Double)value, options, errors);
+        }
+        
         private bool ValidateValue(MobeelizerFieldAccessor field, double doubleValue, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             bool includeMaxValue = GetIncludeMaxValue(options);
@@ -101,7 +106,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
                 return false;
             }
 
-            if (!includeMaxValue && doubleValue >= maxValue)
+            if (!includeMaxValue && doubleValue >= Double.MaxValue)
             {
                 errors.AddFieldMustBeLessThan(field.Name, maxValue);
                 return false;
@@ -113,7 +118,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
                 return false;
             }
 
-            if (!includeMinValue && doubleValue <= minValue)
+            if (!includeMinValue && doubleValue <= Double.MinValue)
             {
                 errors.AddFieldMustBeGreaterThan(field.Name, minValue);
                 return false;

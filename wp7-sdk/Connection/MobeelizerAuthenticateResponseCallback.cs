@@ -5,6 +5,6 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public delegate  void MobeelizerAuthenticateResponseCallback(IMobeelizerAuthenticateResponse response);
+    internal delegate  void MobeelizerAuthenticateResponseCallback(IMobeelizerAuthenticateResponse response);
 
 }

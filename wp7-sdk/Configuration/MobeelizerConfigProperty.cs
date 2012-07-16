@@ -2,10 +2,10 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Configuration
 {
-    public class MobeelizerConfigProperty : ConfigurationElement
+    internal class MobeelizerConfigProperty : ConfigurationElement
     {
         [ConfigurationProperty("name", IsRequired = true)]
-        public string Name
+        internal string Name
         {
             get
             {
@@ -18,7 +18,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Configuration
         }
 
         [ConfigurationProperty("value", IsRequired = true)]
-        public string Value
+        internal string Value
         {
             get
             {

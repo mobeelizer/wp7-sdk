@@ -14,6 +14,7 @@ using System.Threading;
 using Com.Mobeelizer.Mobile.Wp7.Api;
 using wp7_sdk_unitTests.Models;
 using System.Linq;
+using wp7_sdk_unitTests.Helpers.Mock;
 
 namespace wp7_sdk_unitTests.Tests
 {
@@ -25,47 +26,84 @@ namespace wp7_sdk_unitTests.Tests
         {
             Mobeelizer.OnLaunching();
         }
-        //ManualResetEvent resetEvent = new ManualResetEvent(false);
-            
-      //  [TestMethod]
+
+        private ManualResetEvent loginEvent = new ManualResetEvent(false);
+    
+        [TestMethod]
         public void Login()
         {
+            UTWebRequest.SyncData = "firstSync.zip";
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
-            loginStatus  = Mobeelizer.Login("user", "password");
+            Mobeelizer.Login("user", "password", (s) =>
+                {
+                    loginStatus = s;
+                    loginEvent.Set();
+                });
+            loginEvent.WaitOne();
             Assert.AreEqual(loginStatus, MobeelizerLoginStatus.OK);
         }
 
-        ManualResetEvent allDone = new ManualResetEvent(false);
+        private ManualResetEvent login_02Event = new ManualResetEvent(false);
 
-        //[TestMethod]
+        [TestMethod]
         public void Login_02()
         {
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
-            loginStatus = Mobeelizer.Login("user", "passsssword");
+            Mobeelizer.Login("user", "passsssword", (s) =>
+                {
+                    loginStatus = s;
+                    login_02Event.Set();
+                });
+            login_02Event.WaitOne();
             Assert.AreEqual(loginStatus, MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
         }
+
+        private ManualResetEvent syncAllLoginEvent = new ManualResetEvent(false);
+        private ManualResetEvent syncAllEvent = new ManualResetEvent(false);
 
         [TestMethod]
         public void SyncAll()
         {
-            Mobeelizer.Login("user", "password");
-            IMobeelizerDatabase db = Mobeelizer.GetDatabase();
-            var table = db.GetModels<Department>();
-
-            //Department de = new Department();
-            //de.internalNumber = 1;
-            //de.name = "ddd";
-
-            //table.InsertOnSubmit(de);
-            //db.Commit();
-
-            var result = from departement in db.GetModels<Department>() select departement;
-            foreach (Department dep in result)
+            UTWebRequest.SyncData = "firstSync.zip";
+            Mobeelizer.Login("user", "password", (s) =>
             {
-
+                syncAllLoginEvent.Set();
+            });
+            syncAllLoginEvent.WaitOne();
+            String justAddEntityGuid = string.Empty;
+            using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
+            {
+                var departmentTable = db.GetModels<Department>();
+                Department de = new Department();
+                de.internalNumber = 1;
+                de.name = "ddd";
+                departmentTable.InsertOnSubmit(de);
+                db.Commit();
+                justAddEntityGuid = de.guid;
             }
 
-            MobeelizerSyncStatus status = Mobeelizer.SyncAll();
+            MobeelizerSyncStatus status = MobeelizerSyncStatus.NONE;
+            Mobeelizer.SyncAll((s) =>
+                {
+                    status = s;
+                    this.syncAllEvent.Set();
+                });
+            syncAllEvent.WaitOne();
+            Assert.AreEqual(MobeelizerSyncStatus.FINISHED_WITH_SUCCESS, status);
+            Department foundObject = null;
+
+            using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
+            {
+                var departmentTable = db.GetModels<Department>();
+                var query = from d in departmentTable where d.guid == justAddEntityGuid select d;
+                try
+                {
+                    foundObject = query.Single();
+                }
+                catch { }
+                Assert.IsNull(foundObject);
+                Assert.AreEqual(1, departmentTable.Count());
+            }
         }
     }
 }

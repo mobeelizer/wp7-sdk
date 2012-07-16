@@ -5,13 +5,13 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerApplicationDefinition : IMobeelizerDefinition
+    internal class MobeelizerApplicationDefinition : IMobeelizerDefinition
     {
-        private String digest;
+        internal String digest;
 
-        public String Vendor { get; set; }
+        internal String Vendor { get; set; }
 
-        public String Application { get; set; }
+        internal String Application { get; set; }
 
         public String Digest
         {
@@ -43,17 +43,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
             }
         }
 
-        public String ConflictMode { get; set; }
+        internal String ConflictMode { get; set; }
 
-        public IList<MobeelizerDeviceDefinition> Devices { get; set; }
+        internal IList<MobeelizerDeviceDefinition> Devices { get; set; }
 
-        public IList<MobeelizerGroupDefinition> Groups { get; set; }
+        internal IList<MobeelizerGroupDefinition> Groups { get; set; }
 
-        public IList<MobeelizerRoleDefinition> Roles { get; set; }
+        internal IList<MobeelizerRoleDefinition> Roles { get; set; }
 
-        public IList<MobeelizerModelDefinition> Models { get; set; }
+        internal IList<MobeelizerModelDefinition> Models { get; set; }
 
-        public static void DigestSortJoinAndAdd<T>(StringBuilder sb, IList<T> collection) where T : IMobeelizerDefinition
+        internal static void DigestSortJoinAndAdd<T>(StringBuilder sb, IList<T> collection) where T : IMobeelizerDefinition
         {
             if (collection == null || collection.Count == 0)
             {

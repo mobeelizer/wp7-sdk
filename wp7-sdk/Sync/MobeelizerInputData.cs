@@ -6,15 +6,15 @@ using System.IO;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Sync
 {
-    public class MobeelizerInputData
+    internal class MobeelizerInputData
     {
-        public const String DATA_ENTRY_NAME = "data";
+        internal const String DATA_ENTRY_NAME = "data";
 
-        public const String DELETED_FILES_ENTRY_NAME = "deletedFiles";
+        internal const String DELETED_FILES_ENTRY_NAME = "deletedFiles";
 
         private ZipFile zipFile;
 
-        public MobeelizerInputData(Others.File inputFile)
+        internal MobeelizerInputData(Others.File inputFile)
         {
             MemoryStream tmpStream = new MemoryStream();
             using (IsolatedStorageFileStream stream = inputFile.OpenToRead())
@@ -99,8 +99,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
         {
             zipFile.Close();
         }
-    
-        public Stream GetDataInputStream()
+
+        internal Stream GetDataInputStream()
         {
             ZipEntry entry = zipFile.GetEntry(DATA_ENTRY_NAME);
             if (entry == null)

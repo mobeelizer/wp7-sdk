@@ -11,9 +11,9 @@ using System.Windows.Shapes;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
-    public class MobeelizerAuthenticateResponse : IMobeelizerAuthenticateResponse
+    internal class MobeelizerAuthenticateResponse : IMobeelizerAuthenticateResponse
     {
-        public MobeelizerAuthenticateResponse(String instanceGuid, String role)
+        internal MobeelizerAuthenticateResponse(String instanceGuid, String role)
         {
             this.InstanceGuid = instanceGuid;
             this.Role = role;

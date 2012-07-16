@@ -14,9 +14,11 @@ using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerDefinitionConverter
+    internal class MobeelizerDefinitionConverter
     {
-        public IList<MobeelizerModel> Convert(MobeelizerApplicationDefinition definition, String entityPackage, String role)
+        // TODO: sprawdzanie czy modele sa zgodne z definicja
+
+        internal IList<MobeelizerModel> Convert(MobeelizerApplicationDefinition definition, String entityPackage, String role)
         {
             CheckRole(definition, role);
 

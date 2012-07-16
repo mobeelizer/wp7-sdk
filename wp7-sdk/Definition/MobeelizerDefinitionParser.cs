@@ -5,7 +5,7 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerDefinitionParser
+    internal class MobeelizerDefinitionParser
     {
         private MobeelizerDefinitionParser()
         {
@@ -26,12 +26,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
             }
         }
 
-        public static MobeelizerApplicationDefinition Parse(XDocument document)
+        internal static MobeelizerApplicationDefinition Parse(XDocument document)
         {
             return Instance.ParseDefinition(document);
         }
 
-        public MobeelizerApplicationDefinition ParseDefinition(XDocument document)
+        private MobeelizerApplicationDefinition ParseDefinition(XDocument document)
         {  
             MobeelizerApplicationDefinition definition = new MobeelizerApplicationDefinition();
             XElement application = document.Root;

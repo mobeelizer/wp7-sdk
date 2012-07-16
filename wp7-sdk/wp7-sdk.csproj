@@ -59,10 +59,13 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\IMobeelizerFile.cs" />
     <Compile Include="Api\MobeelizerCredential.cs" />
-    <Compile Include="Api\MobeelizerErrors.cs" />
+    <Compile Include="Api\MobeelizerErrorCode.cs" />
+    <Compile Include="Api\MobeelizerError.cs" />
+    <Compile Include="Api\IMobeelizerTransaction.cs" />
     <Compile Include="Database\MobeelizerTable.cs" />
-    <Compile Include="Database\MobeelizerTableEnumerator.cs" />
+    <Compile Include="Database\MobeelizerTransaction.cs" />
     <Compile Include="Model\MobeelizerField.cs" />
     <Compile Include="Api\MobeelizerMode.cs" />
     <Compile Include="Api\IMobeelizerModel.cs" />

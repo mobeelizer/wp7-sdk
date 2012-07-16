@@ -9,10 +9,14 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-namespace Com.Mobeelizer.Mobile.Wp7.Api
+namespace wp7_sdk_unitTests.Helpers.Mock
 {
-    public class MobeelizerErrors
+    public class UTWebRequestCreate : IWebRequestCreate
     {
-
+        public WebRequest Create(Uri uri)
+        {
+            UTWebRequest request = new UTWebRequest(uri);
+            return request;
+        }
     }
 }

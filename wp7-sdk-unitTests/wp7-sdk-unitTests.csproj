@@ -70,6 +70,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Mock\UTAsyncResult.cs" />
+    <Compile Include="Helpers\Mock\UTWebRequest.cs" />
+    <Compile Include="Helpers\Mock\UTWebRequestCreate.cs" />
+    <Compile Include="Helpers\Mock\UTWebResponse.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -87,6 +91,7 @@
     <Compile Include="Tests\Definition\MobeelizerModelFieldCredentialsDefinitionTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerModelFieldDefinitionTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerRoleDefinitionTest.cs" />
+    <Compile Include="Tests\MobeelizerDatabaseTest.cs" />
     <Compile Include="Tests\MobeelizerInternalDatabaseTest.cs" />
     <Compile Include="Tests\MobeelizerTest.cs" />
   </ItemGroup>
@@ -104,6 +109,7 @@
     <Content Include="app.config" />
     <None Include="Properties\AppManifest.xml" />
     <None Include="Properties\WMAppManifest.xml" />
+    <Content Include="Resources\SyncData\firstSync.zip" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ApplicationIcon.png">
@@ -122,9 +128,7 @@
     <Content Include="Resources\Definitions\test2_production.xml" />
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\wp7-sdk\wp7-sdk.csproj">
       <Project>{D914AA24-17B0-4EB1-852B-243908268CBA}</Project>

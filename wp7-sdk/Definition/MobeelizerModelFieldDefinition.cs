@@ -4,19 +4,19 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerModelFieldDefinition : IMobeelizerDefinition
+    internal class MobeelizerModelFieldDefinition : IMobeelizerDefinition
     {
-        public String Name { get; set; }
+        internal String Name { get; set; }
 
-        public MobeelizerFieldType Type { get; set; }
+        internal MobeelizerFieldType Type { get; set; }
 
-        public IList<MobeelizerModelFieldCredentialsDefinition> Credentials { get; set; }
+        internal IList<MobeelizerModelFieldCredentialsDefinition> Credentials { get; set; }
 
-        public bool IsRequired { get; set; }
+        internal bool IsRequired { get; set; }
 
-        public String DefaultValue { get; set; }
+        internal String DefaultValue { get; set; }
 
-        public Dictionary<String, String> Options { get; set; }
+        internal Dictionary<String, String> Options { get; set; }
 
         public string DigestString
         {

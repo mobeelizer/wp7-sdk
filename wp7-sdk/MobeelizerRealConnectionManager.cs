@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerRealConnectionManager : IMobeelizerConnectionManager
+    internal class MobeelizerRealConnectionManager : IMobeelizerConnectionManager
     {
         private const String TAG = "mobeelizer:mobeelizerrealconnectionmanager";
 
@@ -127,7 +127,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 throw new InvalidOperationException(e.Message, e);
             }
         }
-
 
         public String SendSyncDiffRequest(Others.File outputFile)
         {

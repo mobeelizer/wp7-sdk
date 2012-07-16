@@ -248,7 +248,32 @@ namespace Com.Mobeelizer.Mobile.Wp7
             loggedIn = false;
         }
 
-        internal MobeelizerLoginStatus Login(string instance, string user, string password)
+        internal void Login(string instance, string user, string password, MobeelizerLoginCallback callback)
+        {
+            Thread thread = new Thread(new ThreadStart(() =>
+            {
+                MobeelizerLoginStatus status;
+                try
+                {
+                    status = Login(instance, user, password);
+                }
+                catch (Exception e)
+                {
+                    Log.i(TAG, e.Message);
+                    status = MobeelizerLoginStatus.OTHER_FAILURE;
+                }
+                callback(status);
+            }));
+            thread.Name = "Mobeelizer login thread";
+            thread.Start();
+        }
+
+        internal void Login(string user, string password, MobeelizerLoginCallback callback)
+        {
+            Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password, callback);
+        }
+
+        private MobeelizerLoginStatus Login(string instance, string user, string password)
         {
             if (IsLoggedIn)
             {
@@ -298,11 +323,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 }
         }
 
-        internal MobeelizerLoginStatus Login(string user, string password)
-        {
-            return Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password);
-        }
-
         internal bool IsLoggedIn
         {
             get
@@ -318,14 +338,55 @@ namespace Com.Mobeelizer.Mobile.Wp7
             return this.database;
         }
 
-        internal MobeelizerSyncStatus Sync()
+
+        public void Sync(MobeelizerSyncCallback callback)
+        {
+            Thread thread = new Thread(new ThreadStart(() =>
+            {
+                MobeelizerSyncStatus status;
+                try
+                {
+                    status = Sync();
+                }
+                catch (Exception e)
+                {
+                    Log.i(TAG, e.Message);
+                    status = MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                }
+                callback(status);
+            }));
+            thread.Name = "Mobeelizer synchronization thread";
+            thread.Start();
+        }
+
+        private MobeelizerSyncStatus Sync()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");
             return Sync(false);
         }
 
-        internal MobeelizerSyncStatus SyncAll()
+        internal void SyncAll(MobeelizerSyncCallback callback)
+        {
+            Thread thread = new Thread(new ThreadStart(() =>
+            {
+                MobeelizerSyncStatus status;
+                try
+                {
+                    status = SyncAll();
+                }
+                catch (Exception e)
+                {
+                    Log.i(TAG, e.Message);
+                    status = MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                }
+                callback(status);
+            }));
+            thread.Name = "Mobeelizer full synchronization thread";
+            thread.Start();
+        }
+
+        private MobeelizerSyncStatus SyncAll()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");

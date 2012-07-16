@@ -2,6 +2,7 @@
 using System.IO.IsolatedStorage;
 using System.IO;
 using Com.Mobeelizer.Mobile.Wp7.Sync;
+using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
@@ -24,14 +25,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
             try
             {
                 outputData = new MobeelizerOutputData(outputFile, GetTmpOutputFile());
-                enumerable = application.GetDatabase().GetEntitiesToSync();
+                enumerable = ((MobeelizerDatabase)application.GetDatabase()).GetEntitiesToSync();
                 foreach(MobeelizerJsonEntity entity in enumerable)
                 {
                     Log.i(TAG, "Add entity to sync: " + entity.ToString());
                     outputData.WriteEntity(entity);
                 }
 
-                fileIterator = application.GetDatabase().GetFilesToSync();
+                fileIterator = ((MobeelizerDatabase)application.GetDatabase()).GetFilesToSync();
                 while (fileIterator.HasNext)
                 {
                     String guid = fileIterator.Next();
@@ -96,7 +97,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             {
                 inputData = new MobeelizerInputData(inputFile);
                 application.GetFileService().AddFilesFromSync(inputData.GetFiles(), inputData);
-                bool isSuccessful = application.GetDatabase().UpdateEntitiesFromSync(inputData.GetInputData(), isAllSynchronization);
+                bool isSuccessful = ((MobeelizerDatabase)application.GetDatabase()).UpdateEntitiesFromSync(inputData.GetInputData(), isAllSynchronization);
                 if (!isSuccessful)
                 {
                     return false;

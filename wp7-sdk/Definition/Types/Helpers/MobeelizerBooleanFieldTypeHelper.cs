@@ -13,7 +13,7 @@ using Com.Mobeelizer.Mobile.Wp7.Model;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
-    public class MobeelizerBooleanFieldTypeHelper : MobeelizerFieldTypeHelper
+    internal class MobeelizerBooleanFieldTypeHelper : MobeelizerFieldTypeHelper
     {
 
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
@@ -36,7 +36,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
             catch (ArgumentException)
             {
-                errors.AddIncorectValue(field.Name);
                 return false;
             }
         }

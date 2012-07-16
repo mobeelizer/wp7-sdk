@@ -10,7 +10,7 @@ using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
-    public class MobeelizerModel : IMobeelizerModel
+    internal class MobeelizerModel : IMobeelizerModel
     {
         public MobeelizerModelCredentialsDefinition Credentials { get; private set; }
 
@@ -132,6 +132,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         private void InsertEntity(MobeelizerDatabaseContext db, IDictionary<String, object> values)
         {
             MobeelizerModelMetadata metadate = new MobeelizerModelMetadata();
+            metadate.Model = this.Name;
             var entity = Activator.CreateInstance(this.Type);
             foreach (KeyValuePair<String, object> value in values)
             {
@@ -163,6 +164,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                     property.SetValue(entity, value.Value, null);
                 }
             }
+
+            db.GetTable(this.Type).InsertOnSubmit(entity);
+            db.ModelMetadata.InsertOnSubmit(metadate);
         }
 
         private void UpdateEntity(MobeelizerDatabaseContext db, MobeelizerModelMetadata metadate, IDictionary<String, object> values, String guid)
@@ -192,6 +196,32 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                     PropertyInfo property = this.Type.GetProperty(value.Key);
                     property.SetValue(entity, value.Value, null);
                 }
+            }
+        }
+
+        internal bool Validate(MobeelizerWp7Model insert, MobeelizerErrorsHolder errors)
+        {
+            Dictionary<String, object> values = new Dictionary<string, object>();
+            MapEntityToDictionary(insert, values);
+            foreach (MobeelizerField field in this.Fields)
+            {
+                field.Validate(values, errors);
+            }
+
+            if (!errors.IsValid)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void MapEntityToDictionary(MobeelizerWp7Model model, Dictionary<String, object> values)
+        {
+            Type type = model.GetType();
+            foreach (PropertyInfo info in type.GetProperties())
+            {
+                values.Add(info.Name, info.GetValue(model,null));
             }
         }
     }

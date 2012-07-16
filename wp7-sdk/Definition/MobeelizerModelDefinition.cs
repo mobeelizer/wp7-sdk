@@ -4,13 +4,13 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerModelDefinition : IMobeelizerDefinition
+    internal class MobeelizerModelDefinition : IMobeelizerDefinition
     {
-        public String Name { get; set; }
+        internal String Name { get; set; }
 
-        public IList<MobeelizerModelFieldDefinition> Fields { get; set; }
+        internal IList<MobeelizerModelFieldDefinition> Fields { get; set; }
 
-        public IList<MobeelizerModelCredentialsDefinition> Credentials { get; set; }
+        internal IList<MobeelizerModelCredentialsDefinition> Credentials { get; set; }
 
         public String DigestString
         {
