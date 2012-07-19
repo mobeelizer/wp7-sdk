@@ -13,14 +13,14 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
-    public class MobeelizerDatabaseContext : DataContext
+    internal class MobeelizerDatabaseContext : DataContext
     {
-        public MobeelizerDatabaseContext(String connectinString) :
+        internal MobeelizerDatabaseContext(String connectinString) :
             base(connectinString)
         {
         }
 
-        public MobeelizerDatabaseContext(String instanceGuid, String user) :
+        internal MobeelizerDatabaseContext(String instanceGuid, String user) :
             base(String.Format("DataSource=isostore:/{0}_{1}_data.sdf", instanceGuid, user))
         {
         }
@@ -30,7 +30,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             return new MobeelizerTable<T>(this.GetTable<T>(), this);
         }
 
-        public Table<MobeelizerModelMetadata> ModelMetadata
+        internal Table<MobeelizerModelMetadata> ModelMetadata
         {
             get
             {
@@ -38,10 +38,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             }
         }
 
-        public override void SubmitChanges(ConflictMode failureMode)
+        internal Table<MobeelizerFilesTableEntity> Files
         {
-            
-            base.SubmitChanges(failureMode);
+            get
+            {
+                return GetTable<MobeelizerFilesTableEntity>();
+            }
         }
     }
 }

@@ -1,16 +1,16 @@
 ﻿using System;
-using Com.Mobeelizer.Mobile.Wp7.Sync;
-using Com.Mobeelizer.Mobile.Wp7.Definition;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Practices.Mobile.Configuration;
 using Com.Mobeelizer.Mobile.Wp7.Api;
 using Com.Mobeelizer.Mobile.Wp7.Database;
+using Com.Mobeelizer.Mobile.Wp7.Definition;
+using Com.Mobeelizer.Mobile.Wp7.Sync;
+using Microsoft.Practices.Mobile.Configuration;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
-    internal class MobeelizerModel : IMobeelizerModel
+    internal class MobeelizerModel 
     {
         public MobeelizerModelCredentialsDefinition Credentials { get; private set; }
 
@@ -59,14 +59,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             var query = from MobeelizerModelMetadata m in db.ModelMetadata where m.Guid == entity.Guid && m.Model == this.Name select m;
             bool exists = true;
             MobeelizerModelMetadata metadata = null;
-            try
-            {
-                metadata = query.Single();
-            }
-            catch (SystemException)
+            if (query.Count() == 0)
             {
                 exists = false;
             }
+            else
+            {
+                metadata = query.Single();
+            }
+
             
             bool modifiedByUser = exists && metadata.Modyfied == 1;
 
@@ -167,6 +168,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
 
             db.GetTable(this.Type).InsertOnSubmit(entity);
             db.ModelMetadata.InsertOnSubmit(metadate);
+            Log.i("mobeelizermodel", "Add entity from sync " + metadate.Model + ", guid: "+ metadate.Guid);
         }
 
         private void UpdateEntity(MobeelizerDatabaseContext db, MobeelizerModelMetadata metadate, IDictionary<String, object> values, String guid)
@@ -197,6 +199,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                     property.SetValue(entity, value.Value, null);
                 }
             }
+            Log.i("mobeelizermodel", "Upadate entity from sync " + metadate.Model + ", guid: " + metadate.Guid);
         }
 
         internal bool Validate(MobeelizerWp7Model insert, MobeelizerErrorsHolder errors)
@@ -219,8 +222,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         private void MapEntityToDictionary(MobeelizerWp7Model model, Dictionary<String, object> values)
         {
             Type type = model.GetType();
-            foreach (PropertyInfo info in type.GetProperties())
+            foreach (var filed in Fields)
             {
+                PropertyInfo info = type.GetProperty(filed.Name);
                 values.Add(info.Name, info.GetValue(model,null));
             }
         }

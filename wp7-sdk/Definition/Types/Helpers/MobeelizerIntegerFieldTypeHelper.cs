@@ -18,26 +18,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            Int32 intValue = ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
-
-            if (!errors.IsValid)
-            {
-                return;
-            }
+            Int32 intValue = Int32.Parse(value);
 
             values.Add(field.Name, intValue);
-        }
-
-        private Int32 ConvertFromEntityValueToDatabaseValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
-        {
-            Int32 longValue = Int32.Parse(value);
-
-            if (!ValidateValue(field, longValue, options, errors))
-            {
-                return Int32.MinValue;
-            }
-
-            return longValue;
         }
 
         private bool ValidateValue(MobeelizerFieldAccessor field, long longValue, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
@@ -78,6 +61,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
         protected override void ValidateValue(object value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             ValidateValue(field, (int)value, options, errors);
+        }
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(int))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

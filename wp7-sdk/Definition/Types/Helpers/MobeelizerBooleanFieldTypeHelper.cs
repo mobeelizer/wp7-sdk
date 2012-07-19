@@ -18,31 +18,23 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            bool boolValue = (bool)ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
-
-            if (!errors.IsValid)
-            {
-                return;
-            }
-
+            bool boolValue = Boolean.Parse(value);
             values.Add(field.Name, boolValue);
-        }
-
-        private bool ConvertFromEntityValueToDatabaseValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
-        {
-            try
-            {
-                return Boolean.Parse(value);
-            }
-            catch (ArgumentException)
-            {
-                return false;
-            }
         }
 
         protected override void SetNullValueFromMapToDatabase(IDictionary<string, object> values, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             values.Add(field.Name, null);
+        }
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(bool))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

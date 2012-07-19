@@ -47,7 +47,6 @@
 //        [TestMethod]
 //        public void Digest_Options()
 //        {
-//            // TODO: test it with options.
 //        }
 //    }
 //}

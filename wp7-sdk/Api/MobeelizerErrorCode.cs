@@ -34,7 +34,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             {MobeelizerErrorCode.GREATER_THAN_OR_EQUAL_TO,"Value must be greater than or equal to {0}."},
             {MobeelizerErrorCode.LESS_THAN,"Value must be less than {0}."},
             {MobeelizerErrorCode.LESS_THAN_OR_EQUAL_TO,"Value must be less than or equal to {0}."},
-            {MobeelizerErrorCode.NOT_FOUND,"Relation '{0}' must exist."}
+            {MobeelizerErrorCode.NOT_FOUND,"Relation \'{0}\' must exist."}
         };
 
         public static String GetMessage(this MobeelizerErrorCode errorCode)

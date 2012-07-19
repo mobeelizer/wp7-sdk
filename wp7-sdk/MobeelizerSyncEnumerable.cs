@@ -62,7 +62,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
         {
             db.Dispose();
             enumerator.Dispose();
-            db = null;
         }
 
         object System.Collections.IEnumerator.Current

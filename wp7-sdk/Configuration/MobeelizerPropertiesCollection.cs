@@ -2,7 +2,7 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Configuration
 {
-    internal class MobeelizerPropertiesCollection : ConfigurationElementCollection
+    public class MobeelizerPropertiesCollection : ConfigurationElementCollection
     {
         protected override ConfigurationElement CreateNewElement()
         {
@@ -16,7 +16,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Configuration
             return e.Name;
         }
 
-        internal new MobeelizerConfigProperty this[string name]
+        public new MobeelizerConfigProperty this[string name]
         {
             get
             {

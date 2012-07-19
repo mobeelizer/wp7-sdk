@@ -140,11 +140,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
             fieldDef.Name = field.Attribute(MobeelizerDefinitionTag.NAME_TAG).Value;
             fieldDef.IsRequired = Boolean.Parse(field.Attribute(MobeelizerDefinitionTag.REQUIRED_TAG).Value);
             fieldDef.Type = (MobeelizerFieldType)Enum.Parse(typeof(MobeelizerFieldType), field.Attribute(MobeelizerDefinitionTag.TYPE_TAG).Value, true);
-            try
+            if(field.Attribute(MobeelizerDefinitionTag.DEFAULT_VALUE_TAG)!= null)
             {
                 fieldDef.DefaultValue = field.Attribute(MobeelizerDefinitionTag.DEFAULT_VALUE_TAG).Value;
             }
-            catch (NullReferenceException) { }
 
             XElement fieldCredentials = field.Element(XName.Get(MobeelizerDefinitionTag.CREDENTIALS_TAG, MobeelizerDefinitionTag.NAMESPACE));
             if (fieldCredentials != null)

@@ -15,6 +15,7 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 using System.Data.Linq;
 using wp7_sdk_unitTests.Models;
 using System.Linq;
+using wp7_sdk_unitTests.Helpers.Mock;
 
 namespace wp7_sdk_unitTests.Tests
 {
@@ -27,7 +28,7 @@ namespace wp7_sdk_unitTests.Tests
         public void _Init()
         {
             Mobeelizer.OnLaunching();
-
+            UTWebRequest.SyncData = "firstSync.zip";
             Mobeelizer.Login("user", "password", (s) =>
             {
                 loginEvent.Set();

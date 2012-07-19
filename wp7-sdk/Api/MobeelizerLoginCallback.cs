@@ -5,5 +5,5 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
-    public delegate void MobeelizerLoginCallback(MobeelizerLoginStatus status);
+    public delegate void MobeelizerLoginCallback(MobeelizerLoginResult result);
 }

@@ -1,5 +1,5 @@
 ﻿
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
-    public delegate void  MobeelizerSyncCallback(MobeelizerSyncStatus status);
+    public delegate void  MobeelizerSyncCallback(MobeelizerSyncResult result);
 }

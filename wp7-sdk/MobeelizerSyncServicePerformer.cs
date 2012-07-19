@@ -33,7 +33,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             MobeelizerDatabase database = (MobeelizerDatabase)application.GetDatabase();
             IMobeelizerConnectionManager connectionManager = application.GetConnectionManager();
-
             String ticket = String.Empty; 
             bool success = false;
             Others.File outputFile= null;
@@ -57,14 +56,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     }
                     else
                     {
-                        ChangeStatus(MobeelizerSyncStatus.FILE_CREATED);
+                        ChangeStatus(MobeelizerSyncStatus.FILE_CREATED, ticket);
                         Log.i(TAG, "Send sync request.");
                         ticket = connectionManager.SendSyncDiffRequest(outputFile);
                     }
                 }
 
                 Log.i(TAG, "Sync request completed: " + ticket + ".");
-                ChangeStatus(MobeelizerSyncStatus.TASK_CREATED);
+                ChangeStatus(MobeelizerSyncStatus.TASK_CREATED, ticket);
                 if (!connectionManager.WaitUntilSyncRequestComplete(ticket))
                 {
                     return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
@@ -72,15 +71,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 else
                 {
                     Log.i(TAG, "Sync process complete with success.");
-                    ChangeStatus(MobeelizerSyncStatus.TASK_PERFORMED);
+                    ChangeStatus(MobeelizerSyncStatus.TASK_PERFORMED, ticket);
                     inputFile = connectionManager.GetSyncData(ticket);
-                    ChangeStatus(MobeelizerSyncStatus.FILE_RECEIVED);
-                    success = dataFileService.ProcessInputFile(inputFile, isAllSynchronization);
-                    if (!success)
-                    {
-                        return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
-                    }
-
+                    ChangeStatus(MobeelizerSyncStatus.FILE_RECEIVED, ticket);
+                        success = dataFileService.ProcessInputFile(inputFile, isAllSynchronization);
+                        if (!success)
+                        {
+                            return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                        }
                     connectionManager.ConfirmTask(ticket);
                     database.ClearModifiedFlag();
                     application.InternalDatabase.SetInitialSyncAsNotRequired(application.Instance, application.User);
@@ -111,20 +109,21 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 database.UnlockModifiedFlag();
                 if (success)
                 {
-                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_SUCCESS);
+                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_SUCCESS, ticket);
                 }
                 else
                 {
                     Log.i(TAG, "Sync process complete with failure.");
-                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
+                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE, ticket);
                 }
             }
+
             return success ? MobeelizerSyncStatus.FINISHED_WITH_SUCCESS : MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
         }
 
-        private void ChangeStatus(MobeelizerSyncStatus mobeelizerSyncStatus)
+        private void ChangeStatus(MobeelizerSyncStatus mobeelizerSyncStatus, String ticket)
         {
-            // TODO
+            this.application.GetTombstoningManager().SaveSyncTicket(ticket, isAllSynchronization);
             this.application.SetSyncStatus(mobeelizerSyncStatus);
         }
 
@@ -145,6 +144,74 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             Others.File file = new Others.File(filePath);
             return file;
+        }
+
+        internal MobeelizerSyncStatus ContinueSync(string ticket)
+        {
+            if (application.CheckSyncStatus() != MobeelizerSyncStatus.STARTED)
+            {
+                Log.i(TAG, "Send is already running - skipping.");
+                return MobeelizerSyncStatus.NONE;
+            }
+
+            MobeelizerDatabase database = (MobeelizerDatabase)application.GetDatabase();
+            IMobeelizerConnectionManager connectionManager = application.GetConnectionManager();
+            bool success = false;
+            Others.File inputFile = null;
+            try
+            {
+                Log.i(TAG, "Continue sync request: " + ticket + ".");
+                ChangeStatus(MobeelizerSyncStatus.TASK_CREATED, ticket);
+                if (!connectionManager.WaitUntilSyncRequestComplete(ticket))
+                {
+                    return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                }
+                else
+                {
+                    Log.i(TAG, "Sync process complete with success.");
+                    ChangeStatus(MobeelizerSyncStatus.TASK_PERFORMED, ticket);
+                    inputFile = connectionManager.GetSyncData(ticket);
+                    ChangeStatus(MobeelizerSyncStatus.FILE_RECEIVED, ticket);
+                    success = dataFileService.ProcessInputFile(inputFile, isAllSynchronization);
+                    if (!success)
+                    {
+                        return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                    }
+
+                    connectionManager.ConfirmTask(ticket);
+                    database.ClearModifiedFlag();
+                    application.InternalDatabase.SetInitialSyncAsNotRequired(application.Instance, application.User);
+                }
+            }
+            catch (IOException e)
+            {
+                Log.i(TAG, e.Message);
+                return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+            }
+            catch (InvalidOperationException e)
+            {
+                Log.i(TAG, e.Message);
+                return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+            }
+            finally
+            {
+                if (inputFile != null)
+                {
+                    inputFile.Delete();
+                }
+
+                database.UnlockModifiedFlag();
+                if (success)
+                {
+                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_SUCCESS, ticket);
+                }
+                else
+                {
+                    Log.i(TAG, "Sync process complete with failure.");
+                    ChangeStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE, ticket);
+                }
+            }
+            return success ? MobeelizerSyncStatus.FINISHED_WITH_SUCCESS : MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
         }
     }
 }

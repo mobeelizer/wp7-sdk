@@ -36,7 +36,7 @@ namespace wp7_sdk_unitTests.Tests
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
             Mobeelizer.Login("user", "password", (s) =>
                 {
-                    loginStatus = s;
+                    loginStatus = s.GetLoginStatus();
                     loginEvent.Set();
                 });
             loginEvent.WaitOne();
@@ -51,7 +51,7 @@ namespace wp7_sdk_unitTests.Tests
             MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
             Mobeelizer.Login("user", "passsssword", (s) =>
                 {
-                    loginStatus = s;
+                    loginStatus = s.GetLoginStatus();
                     login_02Event.Set();
                 });
             login_02Event.WaitOne();
@@ -85,7 +85,7 @@ namespace wp7_sdk_unitTests.Tests
             MobeelizerSyncStatus status = MobeelizerSyncStatus.NONE;
             Mobeelizer.SyncAll((s) =>
                 {
-                    status = s;
+                    status = s.GetSyncStatus();
                     this.syncAllEvent.Set();
                 });
             syncAllEvent.WaitOne();

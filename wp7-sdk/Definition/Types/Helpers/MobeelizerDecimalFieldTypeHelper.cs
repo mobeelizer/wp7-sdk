@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
 using Com.Mobeelizer.Mobile.Wp7.Model;
 
@@ -15,32 +6,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
     internal class MobeelizerDecimalFieldTypeHelper : MobeelizerFieldTypeHelper
     {
-
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            Double doubleValue = (Double)ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
-
-            if (!errors.IsValid)
-            {
-                return;
-            }
-
+            Double doubleValue = Double.Parse(value);
             values.Add(field.Name, doubleValue);
         }
 
-        private object ConvertFromEntityValueToDatabaseValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
-        {
-            Double doubleValue = Double.Parse(value);
-
-            if (!ValidateValue(field, doubleValue, options, errors))
-            {
-                return null;
-            }
-
-            return doubleValue;
-        }
-
-        protected bool GetIncludeMaxValue(IDictionary<String, String> options)
+        private bool GetIncludeMaxValue(IDictionary<String, String> options)
         {
             try
             {
@@ -52,7 +24,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
         }
 
-        protected bool GetIncludeMinValue(IDictionary<String, String> options)
+        private bool GetIncludeMinValue(IDictionary<String, String> options)
         {
             try
             {
@@ -64,7 +36,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
         }
 
-        protected String GetMinValue(IDictionary<String, String> options)
+        private String GetMinValue(IDictionary<String, String> options)
         {
             try
             {
@@ -76,7 +48,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
         }
 
-        protected String GetMaxValue(IDictionary<String, String> options)
+        private String GetMaxValue(IDictionary<String, String> options)
         {
             try
             {
@@ -129,6 +101,18 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         protected override void SetNullValueFromMapToDatabase(IDictionary<string, object> values, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
+            values.Add(field.Name, null);
+        }
+
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(double))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

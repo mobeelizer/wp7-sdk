@@ -26,11 +26,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.connectionService = new MobeelizerConnectionService(application);
         }
 
-        public MobeelizerLoginResponse Login()
+        public MobeelizerLoginResponse Login(bool offline)
         {
             bool networkConnected = IsNetworkAvailable;
 
-            if (!networkConnected)
+            if (!networkConnected || offline)
             {
                 String[] roleAndInstanceGuid = GetRoleAndInstanceGuidFromDatabase(application);
 
@@ -49,9 +49,9 @@ namespace Com.Mobeelizer.Mobile.Wp7
             try
             {
                 IMobeelizerAuthenticateResponse response = null;
-                if (application.RemoteNotificationToken != null)
+                if (application.NotificationChannelUri != null)
                 {
-                     response = connectionService.Authenticate(application.User, application.Password, application.RemoteNotificationToken);
+                     response = connectionService.Authenticate(application.User, application.Password, application.NotificationChannelUri);
                 }
                 else
                 {
@@ -116,8 +116,17 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
+        private void CheckNetworkAwailable()
+        {
+            if (!this.IsNetworkAvailable)
+            {
+                throw new InvalidOperationException("Network connection unawailable.");
+            }
+        }
+
         public String SendSyncAllRequest()
         {
+            CheckNetworkAwailable();
             try
             {
                 return connectionService.SendSyncAllRequest();
@@ -130,6 +139,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         public String SendSyncDiffRequest(Others.File outputFile)
         {
+            CheckNetworkAwailable();
             try
             {
                 return connectionService.SendSyncDiffRequest(outputFile);
@@ -142,6 +152,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         public Others.File GetSyncData(String ticket)
         {
+            CheckNetworkAwailable();
             try
             {
                 return connectionService.GetSyncData(ticket);
@@ -154,6 +165,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         public void ConfirmTask(String ticket)
         {
+            CheckNetworkAwailable();
             try
             {
                 connectionService.ConfirmTask(ticket);
@@ -166,9 +178,49 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         public bool WaitUntilSyncRequestComplete(String ticket)
         {
+            CheckNetworkAwailable();
             try
             {
                 return connectionService.WaitUntilSyncRequestComplete(ticket);
+            }
+            catch (IOException e)
+            {
+                throw new InvalidOperationException(e.Message, e);
+            }
+        }
+
+        public void RegisterForRemoteNotifications(string channelUri)
+        {
+            CheckNetworkAwailable();
+            try
+            {
+                connectionService.RegisterForRemoteNotifications(channelUri);
+            }
+            catch (IOException e)
+            {
+                throw new InvalidOperationException(e.Message, e);
+            }
+        }
+
+        public void UnregisterForRemoteNotifications(string channelUri)
+        {
+            CheckNetworkAwailable();
+            try
+            {
+                connectionService.UnregisterForRemoteNotifications(channelUri);
+            }
+            catch (IOException e)
+            {
+                throw new InvalidOperationException(e.Message, e);
+            }
+        }
+
+        public void SendRemoteNotification(string device, string group, IList<string> users, IDictionary<string, string> notification)
+        {
+            CheckNetworkAwailable();
+            try
+            {
+                connectionService.SendRemoteNotification(device, group, users, notification);
             }
             catch (IOException e)
             {

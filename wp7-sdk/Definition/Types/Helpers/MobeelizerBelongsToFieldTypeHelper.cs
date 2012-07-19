@@ -19,18 +19,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, String value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             String stringValue = value;
-
-            if (!errors.IsValid)
-            {
-                return;
-            }
-
-            if (!((MobeelizerDatabase)Mobeelizer.GetDatabase()).Exists(options["model"], stringValue)) 
-            {
-                errors.AddFieldMissingReferenceError(field.Name, stringValue);
-                return;
-            }
-
             values.Add(field.Name, stringValue);
         }
 
@@ -54,6 +42,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
                 errors.AddFieldMissingReferenceError(field.Name, stringValue);
                 return;
             }
+        }
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(String))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

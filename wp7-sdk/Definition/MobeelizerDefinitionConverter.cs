@@ -11,19 +11,16 @@ using System.Windows.Shapes;
 using Com.Mobeelizer.Mobile.Wp7.Api;
 using System.Collections.Generic;
 using Com.Mobeelizer.Mobile.Wp7.Model;
+using Microsoft.Practices.Mobile.Configuration;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
     internal class MobeelizerDefinitionConverter
     {
-        // TODO: sprawdzanie czy modele sa zgodne z definicja
-
         internal IList<MobeelizerModel> Convert(MobeelizerApplicationDefinition definition, String entityPackage, String role)
         {
             CheckRole(definition, role);
-
             IList<MobeelizerModel> models = new List<MobeelizerModel>();
-
             foreach (MobeelizerModelDefinition radModel in definition.Models)
             {
                 MobeelizerModelCredentialsDefinition modelCredentials = HasAccess(radModel, role);
@@ -37,12 +34,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
                 {
                     type = FindType(radModel, entityPackage);
                 }
+                else
+                {
+                    throw new ConfigurationException("app.conig file have to include 'entitiesNamespace' definition.");
+                }
 
                 IList<MobeelizerField> fields = new List<MobeelizerField>();
                 foreach (MobeelizerModelFieldDefinition radField in radModel.Fields)
                 {
                     MobeelizerModelFieldCredentialsDefinition fieldCredentials = HasAccess(radField, role);
-
                     if (fieldCredentials == null)
                     {
                         continue;
@@ -123,6 +123,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
                     return;
                 }
             }
+
             throw new InvalidOperationException("Role " + role + " doesn't exist in definition.");
         }
     }

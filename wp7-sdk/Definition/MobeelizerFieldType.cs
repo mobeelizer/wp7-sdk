@@ -29,20 +29,20 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
                 {MobeelizerFieldType.FILE, new MobeelizerFileFieldTypeHelper()}
             };
 
-        internal static IList<Object> GetAccessibleTypes(this MobeelizerFieldType fieldType)
-        {
-            return null;
-        }
 
         internal static void SetValueFromMapToDatabase(this MobeelizerFieldType fieldType, IDictionary<String, object> values, IDictionary<String, String> map, MobeelizerFieldAccessor field, bool required, IDictionary<String, String> options, MobeelizerErrorsHolder errors) 
         {
             typesMap[fieldType].SetValueFromMapToDatabase(values, map, field, required, options, errors);
         }
 
-
         internal static void Validate(this MobeelizerFieldType fieldType, IDictionary<String, object> values, MobeelizerFieldAccessor field, bool required, IDictionary<String, String> options, MobeelizerErrorsHolder errors)
         {
             typesMap[fieldType].Validate(values,field, required, options, errors);
+        }
+
+        internal static bool Supports(this MobeelizerFieldType fieldType, Type type)
+        {
+            return typesMap[fieldType].Supports(type);
         }
     }
 }

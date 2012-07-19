@@ -1,12 +1,10 @@
-﻿using Com.Mobeelizer.Mobile.Wp7.Connection;
-using System.IO.IsolatedStorage;
-using System;
+﻿using System;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
     internal interface IMobeelizerConnectionManager
     {
-        MobeelizerLoginResponse Login();
+        MobeelizerLoginResponse Login(bool offline);
 
         String SendSyncAllRequest();
 
@@ -19,5 +17,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
         void ConfirmTask(string ticket);
 
         bool WaitUntilSyncRequestComplete(string ticket);
+
+        void RegisterForRemoteNotifications(string chanelUri);
+
+        void UnregisterForRemoteNotifications(string NotificationChannelUri);
+
+        void SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification);
     }
 }

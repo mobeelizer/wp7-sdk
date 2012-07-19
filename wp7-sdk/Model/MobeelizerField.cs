@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Com.Mobeelizer.Mobile.Wp7.Definition;
 using System.Collections.Generic;
-using Com.Mobeelizer.Mobile.Wp7.Model;
+using System.Reflection;
+using Microsoft.Practices.Mobile.Configuration;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Model
 {
@@ -29,6 +21,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             this.Name = radField.Name;
             this.FieldType = radField.Type;
             this.accesor = new MobeelizerFieldAccessor(type, radField.Name);
+            PropertyInfo info = type.GetProperty(this.Name);
+            if (info == null)
+            {
+                throw new ConfigurationException("Model '"+ type.Name + "' does not contains property '"+ this.Name+"'.");
+            }
+
+            if(!FieldType.Supports(info.PropertyType))
+            {
+                throw new ConfigurationException("Problem with model '" + type.Name + "', property '"+this.Name+"' type (" + info.PropertyType .Name+ ") not supported.");
+            }
         }
 
         internal string Name { get; private set; }

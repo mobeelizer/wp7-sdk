@@ -57,18 +57,28 @@
     <Reference Include="System.Net" />
     <Reference Include="mscorlib.extensions" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\IMobeelizerFile.cs" />
+    <Compile Include="Api\MobeelizerCommunicationStatus.cs" />
+    <Compile Include="Api\MobeelizerLoginResult.cs" />
+    <Compile Include="Api\MobeelizerNotificationCallback.cs" />
+    <Compile Include="Api\MobeelizerNotificationResult.cs" />
+    <Compile Include="Api\MobeelizerSyncResult.cs" />
+    <Compile Include="IMobeelizerFile.cs" />
     <Compile Include="Api\MobeelizerCredential.cs" />
     <Compile Include="Api\MobeelizerErrorCode.cs" />
     <Compile Include="Api\MobeelizerError.cs" />
     <Compile Include="Api\IMobeelizerTransaction.cs" />
+    <Compile Include="Database\MobeelizerFilesTableEntity.cs" />
     <Compile Include="Database\MobeelizerTable.cs" />
     <Compile Include="Database\MobeelizerTransaction.cs" />
+    <Compile Include="MobeelizerDevelopmentConnectionManager.cs" />
+    <Compile Include="MobeelizerFile.cs" />
+    <Compile Include="MobeelizerTombstoningManager.cs" />
+    <Compile Include="MobeelizerTombstoningState.cs" />
     <Compile Include="Model\MobeelizerField.cs" />
     <Compile Include="Api\MobeelizerMode.cs" />
-    <Compile Include="Api\IMobeelizerModel.cs" />
     <Compile Include="Model\MobeelizerModel.cs" />
     <Compile Include="Api\MobeelizerWp7Model.cs" />
     <Compile Include="Api\MobeelizerSyncStatus.cs" />
@@ -132,7 +142,7 @@
     <Compile Include="Sync\MobeelizerInputDataEnumerable.cs" />
     <Compile Include="Sync\MobeelizerJsonEntity.cs" />
     <Compile Include="Sync\MobeelizerOutputData.cs" />
-    <Compile Include="MobeelizerSyncFileIterator.cs" />
+    <Compile Include="MobeelizerSyncFileEnumerable.cs" />
     <Compile Include="MobeelizerSyncEnumerable.cs" />
   </ItemGroup>
   <ItemGroup />

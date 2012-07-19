@@ -15,29 +15,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
     internal class MobeelizerTextFieldTypeHelper : MobeelizerFieldTypeHelper
     {
-
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            String stringValue = (String)ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
-
-            if (!errors.IsValid)
-            {
-                return;
-            }
-
-            values.Add(field.Name, stringValue);
-        }
-
-        private string ConvertFromEntityValueToDatabaseValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
-        {
-            String stringValue = (String)value;
-
-            if (!ValidateValue(field, stringValue, options, errors))
-            {
-                return null;
-            }
-
-            return stringValue;
+            values.Add(field.Name, value);
         }
 
         private bool ValidateValue(MobeelizerFieldAccessor field, string value, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
@@ -65,7 +45,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         protected override void ValidateValue(object value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            ValidateValue(field, value.ToString(), options, errors);
+            ValidateValue(field, (String)value, options, errors);
+        }
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(String))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

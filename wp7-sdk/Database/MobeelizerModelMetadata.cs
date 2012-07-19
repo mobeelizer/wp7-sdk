@@ -13,16 +13,13 @@ using System.Data.Linq.Mapping;
 namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
     [Table]
-    public class MobeelizerModelMetadata
+    internal class MobeelizerModelMetadata
     {
-        [Column(Name = "Id", DbType = "BigInt IDENTITY NOT NULL", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
-        public int Id { get; set; }
+        [Column(IsPrimaryKey = true)]
+        public String Guid { get; set; }
 
         [Column(CanBeNull= false)]
         public String Model { get; set; }
-
-        [Column(CanBeNull = false)]
-        public String Guid { get; set; }
 
         [Column(CanBeNull = false)]
         public String Owner { get; set; }

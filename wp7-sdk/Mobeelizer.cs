@@ -3,6 +3,9 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 using Com.Mobeelizer.Mobile.Wp7.Configuration;
 using Microsoft.Practices.Mobile.Configuration;
 using System.Reflection;
+using Com.Mobeelizer.Mobile.Wp7.Database;
+using System.IO;
+using System.Collections.Generic;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
@@ -44,6 +47,23 @@ namespace Com.Mobeelizer.Mobile.Wp7
         public static void OnLaunching()
         {
             Instance = MobeelizerApplication.CreateApplication();
+            Instance.GetTombstoningManager().ClearAndUnlockSavedState();
+        }
+
+        public static void OnActivated(bool isApplicationInstancePreserved)
+        {
+            if (!isApplicationInstancePreserved)
+            {
+                Instance = MobeelizerApplication.CreateApplication();
+                Instance.GetTombstoningManager().RestoreApplicationState();
+            }
+
+            Instance.GetTombstoningManager().ClearSavedState();
+        }
+
+        public static void OnDeactivated()
+        {
+            Instance.GetTombstoningManager().SaveApplicationState();
         }
 
         public static void OnClosing()
@@ -86,6 +106,54 @@ namespace Com.Mobeelizer.Mobile.Wp7
             return Instance.CheckSyncStatus();
         }
 
-        // TODO: Notyfication
+        public static IMobeelizerFile CreateFile(String name, Stream stream)
+        {
+            return new MobeelizerFile(name, stream);
+        }
+
+        public static IMobeelizerFile CreateFile(String name, String guid)
+        {
+            return new MobeelizerFile(name, guid);
+        }
+
+        public static void RegisterForRemoteNotifications(String chanelUri, MobeelizerNotificationCallback callback)
+        {
+            Instance.RegisterForRemoteNotifications(chanelUri, callback);
+        }
+
+        public static void UnregisterForRemoteNotifications(MobeelizerNotificationCallback callback)
+        {
+            Instance.UnregisterForRemoteNotifications(callback);
+        }
+
+        public static void SendRemoteNotification(IDictionary<String, String> notification, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(null, null, null, notification, callback);
+        }
+
+        public static void  SendRemoteNotificationToDevice(IDictionary<String, String> notification, String device, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(device, null, null, notification, callback);
+        }
+
+        public static void  SendRemoteNotificationToUsers(IDictionary<String, String> notification, List<String> users, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(null, null, users, notification, callback);
+        }
+
+        public static void SendRemoteNotificationToUsersOnDevice(IDictionary<String, String> notification, List<String> users, String device, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(device, null, users, notification, callback);
+        }
+
+        public static void SendRemoteNotificationToGroup(IDictionary<String, String> notification, String group, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(null, group, null, notification, callback);
+        }
+
+        public static void SendRemoteNotificationToGroupOnDevice(IDictionary<String, String> notification, String group, String device, MobeelizerNotificationCallback callback)
+        {
+            Instance.SendRemoteNotification(device, group, null, notification, callback);
+        }
     }
 }

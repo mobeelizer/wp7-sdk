@@ -21,30 +21,31 @@ namespace Com.Mobeelizer.Mobile.Wp7
         {
             MobeelizerOutputData outputData = null;
             MobeelizerSyncEnumerable enumerable = null;
-            MobeelizerSyncFileIterator fileIterator = null;
+            MobeelizerSyncFileEnumerable filesToSync = null;
             try
             {
                 outputData = new MobeelizerOutputData(outputFile, GetTmpOutputFile());
-                enumerable = ((MobeelizerDatabase)application.GetDatabase()).GetEntitiesToSync();
+                enumerable = application.GetDatabase().GetEntitiesToSync();
                 foreach(MobeelizerJsonEntity entity in enumerable)
                 {
                     Log.i(TAG, "Add entity to sync: " + entity.ToString());
                     outputData.WriteEntity(entity);
                 }
 
-                fileIterator = ((MobeelizerDatabase)application.GetDatabase()).GetFilesToSync();
-                while (fileIterator.HasNext)
+                filesToSync = application.GetDatabase().GetFilesToSync();
+                foreach(var file in filesToSync)
                 {
-                    String guid = fileIterator.Next();
-                    Stream stream = fileIterator.GetStream();
-
-                    if (stream == null)
+                    String guid = file.Guid;
+                    using (Stream stream = file.GetStream())
                     {
-                        continue; // TODO V3 external storage was removed?
-                    }
+                        if (stream == null)
+                        {
+                            continue;
+                        }
 
-                    outputData.WriteFile(guid, stream);
-                    Log.i(TAG, "Add file to sync: " + guid);
+                        outputData.WriteFile(guid, stream);
+                        Log.i(TAG, "Add file to sync: " + guid);
+                    }
                 }
 
                 return true;
@@ -55,39 +56,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
             finally
             {
-                if (enumerable != null)
-                {
-                    enumerable.GetEnumerator().Dispose();
-                }
-                if (fileIterator != null)
-                {
-                    fileIterator.Close();
-                }
                 if (outputData != null)
                 {
                     outputData.Close();
                 }
             }
-        }
-
-        private Others.File GetTmpOutputFile()
-        {
-            String filePath = System.IO.Path.Combine("sync", "output");
-            using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                if (!iso.DirectoryExists("sync"))
-                {
-                    iso.CreateDirectory("sync");
-                }
-                if(iso.FileExists(filePath))
-                {
-                    iso.DeleteFile(filePath);
-                }
-            }
-
-            Others.File file = new Others.File(filePath);
-            file.Create();
-            return file;
         }
 
         internal bool ProcessInputFile(Others.File inputFile, bool isAllSynchronization)
@@ -117,6 +90,26 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     inputData.Close();
                 }
             }
+        }
+
+        private Others.File GetTmpOutputFile()
+        {
+            String filePath = System.IO.Path.Combine("sync", "output");
+            using (IsolatedStorageFile iso = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                if (!iso.DirectoryExists("sync"))
+                {
+                    iso.CreateDirectory("sync");
+                }
+                if (iso.FileExists(filePath))
+                {
+                    iso.DeleteFile(filePath);
+                }
+            }
+
+            Others.File file = new Others.File(filePath);
+            file.Create();
+            return file;
         }
     }
 }

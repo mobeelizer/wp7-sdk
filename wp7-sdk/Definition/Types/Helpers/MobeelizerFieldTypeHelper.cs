@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using System.Collections.Generic;
 using Com.Mobeelizer.Mobile.Wp7.Model;
 
@@ -15,15 +6,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
     internal abstract class MobeelizerFieldTypeHelper
     {
-        internal System.Collections.Generic.IList<object> GetAccessibleTypes()
-        {
-            throw new NotImplementedException();
-        }
-
         internal void SetValueFromMapToDatabase(IDictionary<string, object> values, IDictionary<string, string> map, MobeelizerFieldAccessor field, bool required, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             String value = map[field.Name];
-
             if (value == null && required)
             {
                 errors.AddFieldCanNotBeEmpty(field.Name);
@@ -58,11 +43,19 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
                 return;
             }
 
-            ValidateValue(value, field, options, errors);
+            if (value != null)
+            {
+                ValidateValue(value, field, options, errors);
+            }
         }
 
         protected virtual void ValidateValue(object value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
+        }
+
+        internal virtual bool Supports(Type type)
+        {
+            return false;
         }
     }
 }

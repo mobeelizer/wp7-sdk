@@ -12,6 +12,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
     internal class MobeelizerConnectionService : IMobeelizerConnectionService
     {
+        private const String TAG = "mobeelizer:connectionService";
+
         private const String DEFAULT_PRODUCTION_URL = "http://cloud.mobeelizer.com/sync";
 
         private const String DEFAULT_TEST_URL = "http://cloud.mobeelizer.com/sync";
@@ -23,7 +25,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             this.application = application;
         }
 
-        public IMobeelizerAuthenticateResponse Authenticate(string user, string password, object remoteNotifycationToken)
+        public IMobeelizerAuthenticateResponse Authenticate(string user, string password, String notificationChanelUri)
         {
             throw new NotImplementedException();
         }
@@ -141,7 +143,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
-
         public String SendSyncDiffRequest(Others.File outputFile)
         { 
             String boundary = DateTime.Now.Ticks.ToString();
@@ -165,6 +166,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 byte[] footerbytes = Encoding.UTF8.GetBytes(footer);
                 requestStream.Write(footerbytes, 0, footerbytes.Length);
             }
+
             SetHeaders(request, false, true);
             try
             {
@@ -324,112 +326,216 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
             request.Headers["mas-sdk-version"] = Mobeelizer.VERSION;
         }
-    }
 
-    internal class Synchronizer
-    {
-        private ManualResetEvent allDone = new ManualResetEvent(false);
 
-        internal JObject GetJsonResponse(WebRequest request)
+        public void RegisterForRemoteNotifications(string channelUri)
         {
-            JObject result = null;
-            Exception exception = null;
+            // TODO: change it when serwer implemented
+            WebRequest request = WebRequest.Create(GetUrl(String.Format("/registerPushToken?deviceToken={0}&deviceType=wp7", channelUri)));
+            request.Method = "POST";
+            SetHeaders(request, true, true);
             try
             {
-                request.BeginGetResponse(a =>
+                JObject result = new Synchronizer().GetJsonResponse(request);
+                if (result == null || (String)result["status"] != "OK")
                 {
-                    try
-                    {
-                        using (WebResponse response = request.EndGetResponse(a))
-                        {
-                            result = (JObject)GetJsonObject(response);
-                        }
-                    }
-                    catch (WebException e)
-                    {
-                        exception = e;
-                    }
-                    catch (JsonReaderException e)
-                    {
-                        exception = e;
-                    }
-                    allDone.Set();
-                }, null);
+                    throw new IOException("Unable to register for remote notification.");
+                }
             }
             catch (WebException e)
             {
                 throw new IOException(e.Message, e);
-
             }
 
-            allDone.WaitOne();
-            if (exception != null)
-            {
-                throw exception;
-            }
-
-            return result;
+            Log.i(TAG, "Registered for remote notifications with chanel: " + channelUri);
         }
 
-        internal Stream GetRequestStream(WebRequest request)
+        public void UnregisterForRemoteNotifications(string channelUri)
         {
-            Stream stream = null;
-            request.BeginGetRequestStream(a =>
-            {
-                stream = request.EndGetRequestStream(a);
-                allDone.Set();
-            }, null);
-            allDone.WaitOne(TimeSpan.FromSeconds(30));
-            return stream;
-        }
-
-        private JObject GetJsonObject(WebResponse response)
-        {
-            JObject obj = new JObject();
-            using (Stream stream = response.GetResponseStream())
-            {
-                StreamReader reader = new StreamReader(stream);
-                String str = reader.ReadToEnd();
-                obj = JObject.Parse(str);
-            }
-
-            return obj;
-        }
-
-        internal Stream GetResponseData(WebRequest request)
-        {
-            Stream stream = null;
-            WebException exception = null;
+            WebRequest request = WebRequest.Create(GetUrl(String.Format("/unregisterPushToken?deviceToken={0}&deviceType=wp7", channelUri)));
+            request.Method = "POST";
+            SetHeaders(request, true, true);
             try
             {
-                request.BeginGetResponse(a =>
+                JObject result = new Synchronizer().GetJsonResponse(request);
+                if (result == null || (String)result["status"] != "OK")
                 {
-                    try
-                    {
-                        using (WebResponse response = request.EndGetResponse(a))
-                        {
-                            stream = response.GetResponseStream();
-                        }
-                    }
-                    catch (WebException e)
-                    {
-                        exception = e;
-                    }
-                    allDone.Set();
-                }, null);
+                    throw new IOException("Unable to unregister for remote notification.");
+                }
             }
             catch (WebException e)
             {
                 throw new IOException(e.Message, e);
-
             }
 
-            allDone.WaitOne(TimeSpan.FromSeconds(30));
-            if (exception != null)
+            Log.i(TAG, "Unregistered for remote notifications with chanel: " + channelUri);
+        }
+
+        public void SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification)
+        {
+            try
             {
-                throw exception;
+                JObject jobject = new JObject();
+                StringBuilder logBuilder = new StringBuilder();
+                logBuilder.Append("Sent remote notification ").Append(notification).Append(" to");
+                if (device != null)
+                {
+                    jobject.Add("device", device);
+                    logBuilder.Append(" device: ").Append(device);
+                }
+                if (group != null)
+                {
+                    jobject.Add("group", group);
+                    logBuilder.Append(" group: ").Append(group);
+                }
+                if (users != null)
+                {
+                    jobject.Add("users", new JArray(users));
+                    logBuilder.Append(" users: ").Append(users);
+                }
+                if (device == null && group == null && users == null)
+                {
+                    logBuilder.Append(" everyone");
+                }
+                JObject jnotification = new JObject();
+                foreach(var notify in notification)
+                {
+                    jnotification.Add(notify.Key, notify.Value);
+                }
+
+                jobject.Add("notification", jnotification);
+                try
+                {
+                    WebRequest request = WebRequest.Create(GetUrl("/push"));
+                    request.Method = "POST";
+                    using (Stream stream = new Synchronizer().GetRequestStream(request))
+                    {
+                        byte[] notificationMessage = Encoding.UTF8.GetBytes(jobject.ToString());
+                        stream.Write(notificationMessage, 0, notificationMessage.Length);
+                    }
+
+                    SetHeaders(request, true, true);
+                    JObject result = new Synchronizer().GetJsonResponse(request);
+                }
+                catch (WebException e)
+                {
+                    throw new IOException(e.Message, e);
+                }
+
+                Log.i(TAG, logBuilder.ToString());
             }
-            return stream;
+            catch (JsonException)
+            {
+                //  throw new IOException(e.getMessage(), e);
+            }
+        }
+
+        private class Synchronizer
+        {
+            private ManualResetEvent allDone = new ManualResetEvent(false);
+
+            internal JObject GetJsonResponse(WebRequest request)
+            {
+                JObject result = null;
+                Exception exception = null;
+                try
+                {
+                    request.BeginGetResponse(a =>
+                    {
+                        try
+                        {
+                            using (WebResponse response = request.EndGetResponse(a))
+                            {
+                                result = (JObject)GetJsonObject(response);
+                            }
+                        }
+                        catch (WebException e)
+                        {
+                            exception = e;
+                        }
+                        catch (JsonReaderException e)
+                        {
+                            exception = e;
+                        }
+                        allDone.Set();
+                    }, null);
+                }
+                catch (WebException e)
+                {
+                    throw new IOException(e.Message, e);
+
+                }
+
+                allDone.WaitOne();
+                if (exception != null)
+                {
+                    throw exception;
+                }
+
+                return result;
+            }
+
+            internal Stream GetRequestStream(WebRequest request)
+            {
+                Stream stream = null;
+                request.BeginGetRequestStream(a =>
+                {
+                    stream = request.EndGetRequestStream(a);
+                    allDone.Set();
+                }, null);
+                allDone.WaitOne(TimeSpan.FromSeconds(30));
+                return stream;
+            }
+
+            private JObject GetJsonObject(WebResponse response)
+            {
+                JObject obj = new JObject();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(stream);
+                    String str = reader.ReadToEnd();
+                    obj = JObject.Parse(str);
+                }
+
+                return obj;
+            }
+
+            internal Stream GetResponseData(WebRequest request)
+            {
+                Stream stream = null;
+                WebException exception = null;
+                try
+                {
+                    request.BeginGetResponse(a =>
+                    {
+                        try
+                        {
+                            using (WebResponse response = request.EndGetResponse(a))
+                            {
+                                stream = response.GetResponseStream();
+                            }
+                        }
+                        catch (WebException e)
+                        {
+                            exception = e;
+                        }
+                        allDone.Set();
+                    }, null);
+                }
+                catch (WebException e)
+                {
+                    throw new IOException(e.Message, e);
+
+                }
+
+                allDone.WaitOne(TimeSpan.FromSeconds(30));
+                if (exception != null)
+                {
+                    throw exception;
+                }
+
+                return stream;
+            }
         }
     }
 }

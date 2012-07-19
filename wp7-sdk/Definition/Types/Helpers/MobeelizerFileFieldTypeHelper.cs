@@ -18,12 +18,22 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            //TODO:
+            values.Add(field.Name, value);
         }
 
         protected override void SetNullValueFromMapToDatabase(IDictionary<string, object> values, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            // TODO:
+            values.Add(field.Name, null);
+        }
+
+        internal override bool Supports(Type type)
+        {
+            if (type == typeof(String))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }
