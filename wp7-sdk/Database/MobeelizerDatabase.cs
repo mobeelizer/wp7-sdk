@@ -11,7 +11,7 @@ using Com.Mobeelizer.Mobile.Wp7.Definition;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
-    public class MobeelizerDatabase : IMobeelizerDatabase
+    internal class MobeelizerDatabase : IMobeelizerDatabase
     {
         private IList<IMobeelizerTransaction> openedTransactions = new List<IMobeelizerTransaction>();
 
@@ -23,7 +23,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             get
             {
-                return String.Format("DataSource=isostore:/{0}_{1}_data.sdf", this.application.InstanceGuid, this.application.User);
+                return String.Format("DataSource=isostore:/{0}_{1}_data_{2}.sdf", this.application.InstanceGuid, this.application.User, this.application.DataBaseVersion);
             }
         }
 

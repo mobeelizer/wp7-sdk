@@ -57,5 +57,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
         {
             return false;
         }
+
+        internal virtual string SetValueFromDatabaseToMap(object value)
+        {
+            return value.ToString();
+        }
     }
 }

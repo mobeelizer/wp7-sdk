@@ -44,5 +44,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
         {
             return typesMap[fieldType].Supports(type);
         }
+
+        internal static String SetValueFromDatabaseToMap(this MobeelizerFieldType fieldType, object value)
+        {
+            return typesMap[fieldType].SetValueFromDatabaseToMap(value);
+        }
     }
 }

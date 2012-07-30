@@ -2,6 +2,9 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
+    /// <summary>
+    /// Synchronizaion operation result.
+    /// </summary>
     public class MobeelizerSyncResult
     {
         private MobeelizerSyncStatus status;
@@ -19,6 +22,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             this.exception = e;
         }
 
+        /// <summary>
+        /// Returns synchronization status. If sync operations generates an unexpected exception, execution of  this method throws it.
+        /// </summary>
+        /// <returns>Sync status.</returns>
         public MobeelizerSyncStatus GetSyncStatus()
         {
             if (this.exception != null)

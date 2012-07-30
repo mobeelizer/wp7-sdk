@@ -1,6 +1,9 @@
 ﻿
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
+    /// <summary>
+    /// The result of creation a user session.
+    /// </summary>
     public enum MobeelizerLoginStatus
     {
         /// <summary>

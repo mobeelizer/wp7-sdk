@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
-namespace Com.Mobeelizer.Mobile.Wp7.Api
+namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
-    public class MobeelizerError
+    internal class MobeelizerError
     {
         private object args;
 
@@ -24,9 +15,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             this.args = args;
         }
 
-        public MobeelizerErrorCode Code { get; private set; }
+        internal MobeelizerErrorCode Code { get; private set; }
 
-        public string Message
+        internal string Message
         {
             get
             {

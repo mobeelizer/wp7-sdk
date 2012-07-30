@@ -2,6 +2,9 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Configuration
 {
+    /// <summary>
+    /// Configuration section class. 
+    /// </summary>
     public class MobeelizerConfigurationSection : ConfigurationSection
     {
         /// <summary>

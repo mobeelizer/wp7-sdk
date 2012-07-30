@@ -29,6 +29,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>wp7-SDK.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>wp7-SDK.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
@@ -60,15 +62,20 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\NamespaceDoc.cs" />
     <Compile Include="Api\MobeelizerCommunicationStatus.cs" />
     <Compile Include="Api\MobeelizerLoginResult.cs" />
     <Compile Include="Api\MobeelizerNotificationCallback.cs" />
     <Compile Include="Api\MobeelizerNotificationResult.cs" />
     <Compile Include="Api\MobeelizerSyncResult.cs" />
-    <Compile Include="IMobeelizerFile.cs" />
+    <Compile Include="Api\MobeelizerSyncStatusChangedEventHandler.cs" />
+    <Compile Include="Configuration\NamespaceDoc.cs" />
+    <Compile Include="Connection\IMobeelizerNotificationTokenConverter.cs" />
+    <Compile Include="Connection\MobeelizerNotificationTokenConverter.cs" />
+    <Compile Include="Api\IMobeelizerFile.cs" />
     <Compile Include="Api\MobeelizerCredential.cs" />
-    <Compile Include="Api\MobeelizerErrorCode.cs" />
-    <Compile Include="Api\MobeelizerError.cs" />
+    <Compile Include="Database\MobeelizerErrorCode.cs" />
+    <Compile Include="Database\MobeelizerError.cs" />
     <Compile Include="Api\IMobeelizerTransaction.cs" />
     <Compile Include="Database\MobeelizerFilesTableEntity.cs" />
     <Compile Include="Database\MobeelizerTable.cs" />
@@ -99,6 +106,7 @@
     <Compile Include="Definition\IMobeelizerDefinition.cs" />
     <Compile Include="Definition\MobeelizerDefinitionConverter.cs" />
     <Compile Include="Definition\MobeelizerErrorsHolder.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Others\File.cs" />
     <Compile Include="Others\Log.cs" />
     <Compile Include="Definition\MobeelizerApplicationDefinition.cs" />

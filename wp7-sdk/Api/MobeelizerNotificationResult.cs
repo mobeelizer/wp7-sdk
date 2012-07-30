@@ -2,6 +2,9 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
+    /// <summary>
+    /// Notification result.
+    /// </summary>
     public class MobeelizerNotificationResult
     {
         private MobeelizerCommunicationStatus status;
@@ -19,6 +22,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             this.exception = e;
         }
 
+        /// <summary>
+        /// Returns communication status. If notification operations generates an unexpected exception, execution of  this method throws it.
+        /// </summary>
+        /// <returns>Comunication status.</returns>
         public MobeelizerCommunicationStatus GetCommunicationStatus()
         {
             if (this.exception != null)

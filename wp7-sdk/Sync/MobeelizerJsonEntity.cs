@@ -4,9 +4,9 @@ using Newtonsoft.Json.Linq;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Sync
 {
-    public class MobeelizerJsonEntity
+    internal class MobeelizerJsonEntity
     {
-        public enum MobeelizerConflictState
+        internal enum MobeelizerConflictState
         {
             NO_IN_CONFLICT,
             IN_CONFLICT_BECAUSE_OF_YOU,
@@ -23,12 +23,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
 
         private String owner;
 
-        public MobeelizerJsonEntity()
+        internal MobeelizerJsonEntity()
         {
 
         }
 
-        public MobeelizerJsonEntity(String json)
+        internal MobeelizerJsonEntity(String json)
         {
             JObject jsonObject = JObject.Parse(json);
             model = (String)jsonObject["model"];
@@ -36,10 +36,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
 
             try
             {
-                owner = jsonObject["owner"].ToString();
+                owner = (String)jsonObject["owner"];
             }
-            catch (KeyNotFoundException) { }
-
+            catch (KeyNotFoundException e)
+            {
+                throw new InvalidOperationException("Owner field is required", e);
+            }
+            catch (NullReferenceException e)
+            {
+                throw new InvalidOperationException("Owner field is required", e);
+            }
+            
             try
             {
                 conflictState = (MobeelizerConflictState)(Enum.Parse(typeof(MobeelizerConflictState), jsonObject["conflictState"].ToString(), true));
@@ -61,7 +68,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             catch (KeyNotFoundException) { }
         }
 
-        public String Model
+        internal String Model
         {
             get
             {
@@ -73,7 +80,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public String Guid
+        internal String Guid
         {
             get
             {
@@ -85,7 +92,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public String Owner
+        internal String Owner
         {
             get
             {
@@ -97,7 +104,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public Dictionary<String, String> Fields
+        internal Dictionary<String, String> Fields
         {
             get
             {
@@ -109,17 +116,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public bool ContainsValue(String field)
+        internal bool ContainsValue(String field)
         {
             return fields == null ? false : fields.ContainsKey(field);
         }
 
-        public String GetValue(String field)
+        internal String GetValue(String field)
         {
             return fields == null ? null : fields[field];
         }
 
-        public MobeelizerConflictState ConflictState
+        internal MobeelizerConflictState ConflictState
         {
             get
             {
@@ -131,7 +138,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public bool IsDeleted
+        internal bool IsDeleted
         {
             get
             {
@@ -155,7 +162,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             }
         }
 
-        public String GetJson()
+        internal String GetJson()
         {
             JObject json = new JObject();
             json.Add("model", model);

@@ -48,7 +48,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                 }
 
                 value = property.GetValue(modelObject, null);
-                entity.Fields.Add(field.Name, value.ToString());
+                entity.Fields.Add(field.Name, field.FieldType.SetValueFromDatabaseToMap(value));
             }
 
             return entity;

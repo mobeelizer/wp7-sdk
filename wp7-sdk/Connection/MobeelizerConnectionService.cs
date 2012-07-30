@@ -20,9 +20,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         private MobeelizerApplication application;
 
+        private IMobeelizerNotificationTokenConverter tokenConverter;
+
         internal MobeelizerConnectionService(MobeelizerApplication application)
         {
             this.application = application;
+            this.tokenConverter = new MobeelizerNotificationTokenConverter();
         }
 
         public IMobeelizerAuthenticateResponse Authenticate(string user, string password, String notificationChanelUri)
@@ -327,11 +330,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             request.Headers["mas-sdk-version"] = Mobeelizer.VERSION;
         }
 
-
         public void RegisterForRemoteNotifications(string channelUri)
         {
-            // TODO: change it when serwer implemented
-            WebRequest request = WebRequest.Create(GetUrl(String.Format("/registerPushToken?deviceToken={0}&deviceType=wp7", channelUri)));
+            String token = this.tokenConverter.Convert(channelUri);
+            WebRequest request = WebRequest.Create(GetUrl(String.Format("/registerPushToken?deviceToken={0}&deviceType=wp7", token)));
             request.Method = "POST";
             SetHeaders(request, true, true);
             try
@@ -352,6 +354,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         public void UnregisterForRemoteNotifications(string channelUri)
         {
+            String token = String.Format("{0:X}", channelUri);
             WebRequest request = WebRequest.Create(GetUrl(String.Format("/unregisterPushToken?deviceToken={0}&deviceType=wp7", channelUri)));
             request.Method = "POST";
             SetHeaders(request, true, true);

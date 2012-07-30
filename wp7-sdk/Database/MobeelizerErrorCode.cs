@@ -10,9 +10,9 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using System.Collections.Generic;
 
-namespace Com.Mobeelizer.Mobile.Wp7.Api
+namespace Com.Mobeelizer.Mobile.Wp7.Database
 {
-    public enum MobeelizerErrorCode
+    internal enum MobeelizerErrorCode
     {
         OK,
         EMPTY,
@@ -24,7 +24,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         NOT_FOUND
     }
 
-    public static class MobeelizerErrorCodeExtension
+    internal static class MobeelizerErrorCodeExtension
     {
         private static Dictionary<MobeelizerErrorCode, String> errorMessages = new Dictionary<MobeelizerErrorCode, string>()
         {
@@ -37,7 +37,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             {MobeelizerErrorCode.NOT_FOUND,"Relation \'{0}\' must exist."}
         };
 
-        public static String GetMessage(this MobeelizerErrorCode errorCode)
+        internal static String GetMessage(this MobeelizerErrorCode errorCode)
         {
             return errorMessages[errorCode];
         }

@@ -1,6 +1,9 @@
 ﻿
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
+    /// <summary>
+    /// The result of communication.
+    /// </summary>
     public enum MobeelizerCommunicationStatus
     {
         /// <summary>

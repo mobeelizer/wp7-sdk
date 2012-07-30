@@ -2,7 +2,7 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerLoginResponse
+    internal class MobeelizerLoginResponse
     {
         public MobeelizerLoginResponse(MobeelizerLoginStatus status)
         {

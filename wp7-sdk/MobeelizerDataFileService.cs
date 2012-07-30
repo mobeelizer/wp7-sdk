@@ -6,7 +6,7 @@ using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerDataFileService
+    internal class MobeelizerDataFileService
     {
         private const String TAG = "mobeelizer:datafileservice";
 

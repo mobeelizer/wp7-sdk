@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Database 
 {
-    public class MobeelizerTable<T>: ITable<T> where T : MobeelizerWp7Model
+    internal class MobeelizerTable<T>: ITable<T> where T : MobeelizerWp7Model
     {
         private ITable<T> table;
 

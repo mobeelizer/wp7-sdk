@@ -8,7 +8,7 @@ using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerSyncEnumerable : IEnumerable<MobeelizerJsonEntity>
+    internal class MobeelizerSyncEnumerable : IEnumerable<MobeelizerJsonEntity>
     {
         private MobeelizerDatabase mobeelizerDatabase;
 

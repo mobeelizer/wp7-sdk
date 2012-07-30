@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Com.Mobeelizer.Mobile.Wp7.Api;
 using System.Data.Linq;
 using Com.Mobeelizer.Mobile.Wp7.Definition;
@@ -47,7 +38,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                     MobeelizerErrorsHolder errors = new MobeelizerErrorsHolder();
                     if (!db.ValidateEntity(insert as MobeelizerWp7Model, errors))
                     {
-                        throw new InvalidOperationException(errors.GetErrorsSymmary());
+                        throw new ArgumentException(errors.GetErrorsSymmary());
                     }
 
                     String model = insert.GetType().Name;

@@ -3,7 +3,7 @@ using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerModelCredentialsDefinition : IMobeelizerDefinition
+    internal class MobeelizerModelCredentialsDefinition : IMobeelizerDefinition
     {
         public String Role { get; set; }
 

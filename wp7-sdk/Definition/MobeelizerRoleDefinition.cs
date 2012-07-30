@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerRoleDefinition : IMobeelizerDefinition
+    internal class MobeelizerRoleDefinition : IMobeelizerDefinition
     {
         public String Group { get; set; }
 

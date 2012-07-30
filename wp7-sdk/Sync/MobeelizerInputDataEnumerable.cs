@@ -34,7 +34,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
         }
     }
 
-    public class MobeelizerInputDataEnumerator : IEnumerator<MobeelizerJsonEntity>
+    internal class MobeelizerInputDataEnumerator : IEnumerator<MobeelizerJsonEntity>
     {
         private MobeelizerJsonEntity current;
 

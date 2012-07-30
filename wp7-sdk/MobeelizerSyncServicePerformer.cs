@@ -6,7 +6,7 @@ using Com.Mobeelizer.Mobile.Wp7.Database;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerSyncServicePerformer
+    internal class MobeelizerSyncServicePerformer
     {
         private const String TAG = "mobeelizer:syncserviceperformer";
 

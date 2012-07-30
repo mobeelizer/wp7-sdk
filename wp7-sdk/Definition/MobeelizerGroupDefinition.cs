@@ -2,7 +2,7 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Definition
 {
-    public class MobeelizerGroupDefinition : IMobeelizerDefinition
+    internal class MobeelizerGroupDefinition : IMobeelizerDefinition
     {
         public String Name { get; set; }
 

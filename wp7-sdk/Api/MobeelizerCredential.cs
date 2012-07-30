@@ -1,6 +1,9 @@
 ﻿
 namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
+    /// <summary>
+    /// Credential for entities' operations.
+    /// </summary>
     public enum MobeelizerCredential
     {
         /// <summary>

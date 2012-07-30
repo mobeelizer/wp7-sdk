@@ -2,8 +2,14 @@
 
 namespace Com.Mobeelizer.Mobile.Wp7.Configuration
 {
+    /// <summary>
+    /// Configuration property class.
+    /// </summary>
     public class MobeelizerConfigProperty : ConfigurationElement
     {
+        /// <summary>
+        /// Property name.
+        /// </summary>
         [ConfigurationProperty("name", IsRequired = true)]
         public string Name
         {
@@ -17,6 +23,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Configuration
             }
         }
 
+        /// <summary>
+        /// Property value.
+        /// </summary>
         [ConfigurationProperty("value", IsRequired = true)]
         public string Value
         {

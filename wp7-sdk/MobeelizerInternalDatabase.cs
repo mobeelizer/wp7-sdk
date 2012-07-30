@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerInternalDatabase
+    internal class MobeelizerInternalDatabase
     {
         public MobeelizerInternalDatabase()
         {

@@ -13,7 +13,7 @@ using Microsoft.Practices.Mobile.Configuration;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    public class MobeelizerApplication
+    internal class MobeelizerApplication
     {
         private const String TAG = "mobeelizer";
 
@@ -76,6 +76,8 @@ namespace Com.Mobeelizer.Mobile.Wp7
         private MobeelizerDatabase database;
 
         private MobeelizerTombstoningManager tombstoningManager;
+
+        internal event MobeelizerSyncStatusChangedEventHandler SyncStatusChanged;
 
         internal static MobeelizerApplication CreateApplication()
         {
@@ -173,7 +175,6 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
             try
             {
-
                 byte[] id = (byte[])Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceUniqueId");
                 deviceIdentifier = Convert.ToBase64String(id);
             }
@@ -257,6 +258,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
                 callback(result);
             }));
+
             thread.Name = "Mobeelizer login thread";
             thread.Start();
         }
@@ -405,6 +407,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         internal void SetSyncStatus(MobeelizerSyncStatus mobeelizerSyncStatus)
         {
+            MobeelizerSyncStatusChangedEventHandler handler = SyncStatusChanged;
+            if (handler != null)
+            {
+                handler(mobeelizerSyncStatus);
+            }
+
             this.syncStatus = mobeelizerSyncStatus;
         }
 
@@ -515,6 +523,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
             get
             {
                 return this.deviceIdentifier;
+            }
+        }
+
+        public int DataBaseVersion
+        {
+            get
+            {
+                return this.databaseVersion;
             }
         }
 
