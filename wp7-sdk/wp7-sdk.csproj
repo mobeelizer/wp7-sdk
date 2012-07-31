@@ -43,7 +43,9 @@
     <DocumentationFile>wp7-SDK.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Configuration">
+      <HintPath>..\..\wp7-api-demos\wp7-api-demos\wp7-api-demos\libs\Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>libs\Newtonsoft.Json.dll</HintPath>

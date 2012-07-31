@@ -74,11 +74,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     ChangeStatus(MobeelizerSyncStatus.TASK_PERFORMED, ticket);
                     inputFile = connectionManager.GetSyncData(ticket);
                     ChangeStatus(MobeelizerSyncStatus.FILE_RECEIVED, ticket);
-                        success = dataFileService.ProcessInputFile(inputFile, isAllSynchronization);
-                        if (!success)
-                        {
-                            return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
-                        }
+                    success = dataFileService.ProcessInputFile(inputFile, isAllSynchronization);
+                    if (!success)
+                    {
+                        return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                    }
                     connectionManager.ConfirmTask(ticket);
                     database.ClearModifiedFlag();
                     application.InternalDatabase.SetInitialSyncAsNotRequired(application.Instance, application.User);

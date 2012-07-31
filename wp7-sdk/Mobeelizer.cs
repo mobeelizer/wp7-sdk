@@ -117,7 +117,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
         /// <param name="callback">Callback method.</param>
-        public void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
+        public static void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
         {
             Instance.Login(instance, login, password, callback);
         }

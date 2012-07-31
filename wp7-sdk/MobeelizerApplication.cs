@@ -84,6 +84,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
             MobeelizerApplication application = new MobeelizerApplication();
             application.tombstoningManager = new MobeelizerTombstoningManager(application);
             MobeelizerConfigurationSection section = (MobeelizerConfigurationSection)ConfigurationManager.GetSection("mobeelizer-configuration");
+            if (section == null)
+            {
+                throw new ConfigurationException("'mobeelizer-configuration' section not found in app.config file. Check if app.config is not missing and if file Build Action is set to Content.");
+            }
+
             String device;
             String entityPackage;
             String definitionXml;

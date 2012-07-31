@@ -8,9 +8,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
     {
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            DateTime date = new DateTime(Int64.Parse(value)); //ConvertFromEntityValueToDatabaseValue(field, value, options, errors);
-            //TODO check how is it represented in json entity
-
+            DateTime date = new DateTime(TimeSpan.FromMilliseconds(Int64.Parse(value)).Ticks + new DateTime(1970,1,1,2,0,0,DateTimeKind.Utc).Ticks); 
             values.Add(field.Name, date);
         }
 
@@ -37,7 +35,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
             }
 
             DateTime? dateTime = value as DateTime?;
-            return dateTime.Value.Ticks.ToString();
+            return ((long)((dateTime.Value - new DateTime(1970, 1, 1, 2,0,0,DateTimeKind.Utc)).TotalMilliseconds)).ToString();
         }
     }
 }

@@ -8,7 +8,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
     {
         internal void SetValueFromMapToDatabase(IDictionary<string, object> values, IDictionary<string, string> map, MobeelizerFieldAccessor field, bool required, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
-            String value = map[field.Name];
+            String value =null;
+            if (map.ContainsKey(field.Name))
+            {
+                value = map[field.Name];
+            }
+
             if (value == null && required)
             {
                 errors.AddFieldCanNotBeEmpty(field.Name);

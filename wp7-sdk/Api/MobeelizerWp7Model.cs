@@ -19,7 +19,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         /// Model owner. 
         /// </summary>
         /// <value>Owner of current model.</value>
-        protected virtual String owner
+        protected String owner
         {
             get
             {
