@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
-    internal class MobeelizerTombstoningState
+    public class MobeelizerTombstoningState
     {
         [XmlElement]
         public bool LoggedIn { get; set; }

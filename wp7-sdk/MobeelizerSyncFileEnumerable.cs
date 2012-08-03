@@ -67,7 +67,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         object IEnumerator.Current
         {
-            get { throw new NotImplementedException(); }
+            get { return this.Current; }
         }
 
         public bool MoveNext()

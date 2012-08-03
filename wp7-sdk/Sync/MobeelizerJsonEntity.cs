@@ -36,7 +36,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
 
             try
             {
-                owner = (String)jsonObject["owner"];
+                owner = jsonObject["owner"].ToString();
             }
             catch (KeyNotFoundException e)
             {
@@ -51,7 +51,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
             {
                 conflictState = (MobeelizerConflictState)(Enum.Parse(typeof(MobeelizerConflictState), jsonObject["conflictState"].ToString(), true));
             }
-            catch (KeyNotFoundException)
+            catch (NullReferenceException)
             {
                 conflictState = MobeelizerConflictState.NO_IN_CONFLICT;
             }
@@ -65,7 +65,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Sync
                     fields.Add(key.Key, key.Value.ToString());
                 }
             }
-            catch (KeyNotFoundException) { }
+            catch (NullReferenceException) { }
         }
 
         internal String Model

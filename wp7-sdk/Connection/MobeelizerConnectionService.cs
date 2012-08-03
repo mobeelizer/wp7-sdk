@@ -30,11 +30,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         public IMobeelizerAuthenticateResponse Authenticate(string user, string password, String notificationChanelUri)
         {
-            throw new NotImplementedException();
-        }
-
-        public IMobeelizerAuthenticateResponse Authenticate(string user, string password)
-        {
             WebRequest request = WebRequest.Create(GetUrl("/authenticate"));
             request.Method = "GET";
             SetHeaders(request, false, false);
@@ -79,6 +74,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             {
                 throw new InvalidOperationException(e.Message, e);
             }
+        }
+
+        public IMobeelizerAuthenticateResponse Authenticate(string user, string password)
+        {
+            return this.Authenticate(user, password, null);
         }
 
         private JObject GetJsonObject(WebResponse response)

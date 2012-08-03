@@ -88,7 +88,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             }
 
             Dictionary<String, object> values = new Dictionary<string, object>();
-            if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.IN_CONFLICT_BECAUSE_OF_YOU || entity.Fields == null)
+            if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.IN_CONFLICT_BECAUSE_OF_YOU || entity.Fields.Count == 0)
             {
                 metadata.Conflicted = 1;
                 metadata.Modyfied = 0;
@@ -105,7 +105,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
 
             values.Add("Owner", entity.Owner);
             values.Add("Modyfied", 0);
-            values.Add("Deleted", entity.IsDeleted ? 1 : 0);
+            try
+            {
+                values.Add("Deleted", entity.IsDeleted ? 1 : 0);
+            }
+            catch (KeyNotFoundException)
+            {
+                values.Add("Deleted", false);
+            }
+
             MobeelizerErrorsHolder errors = new MobeelizerErrorsHolder();
             foreach (MobeelizerField field in this.Fields)
             {
