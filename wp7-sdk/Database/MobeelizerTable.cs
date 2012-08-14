@@ -30,9 +30,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             String guid = (entity as MobeelizerWp7Model).guid;
             var query = from meta in db.ModelMetadata where meta.Model == model && meta.Guid == guid select meta;
             MobeelizerModelMetadata metadata = query.Single();
-            metadata.Modyfied = 1;
             metadata.Deleted = 1;
-            //this.table.DeleteOnSubmit(entity);
         }
 
         public void InsertOnSubmit(T entity)

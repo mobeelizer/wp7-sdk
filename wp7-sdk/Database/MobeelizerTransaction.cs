@@ -29,7 +29,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             ChangeSet set = dataContext.GetChangeSet();
             IList<MobeelizerModelMetadata> metadataToAdd = new List<MobeelizerModelMetadata>();
             IList<MobeelizerModelMetadata> metadataToUpdate = new List<MobeelizerModelMetadata>();
-            IList<MobeelizerModelMetadata> recordsToDelete = new List<MobeelizerModelMetadata>();
 
             foreach (var insert in set.Inserts)
             {
@@ -55,7 +54,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                         Deleted = 0,
                         Modyfied = 1
                     };
-                  //  modelObject.Set(metadata);
 
                     metadataToAdd.Add(metadata);
                 }
@@ -75,7 +73,20 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                     String guid = (update as MobeelizerWp7Model).guid;
                     var query = from meta in dataContext.ModelMetadata where meta.Model == model && meta.Guid == guid select meta;
                     MobeelizerModelMetadata metadata = query.Single();
+                    if (metadata.Modyfied == 2)
+                    {
+                        throw new InvalidOperationException("Entity is locked by synchronization process, wait until synchronization finishes.");
+                    }
+
                     metadataToUpdate.Add(metadata);
+                }
+                else if (update is MobeelizerModelMetadata)
+                {
+                    MobeelizerModelMetadata metadata = update as MobeelizerModelMetadata;
+                    if (metadata.Deleted == 1 && metadata.Modyfied == 2)
+                    {
+                        throw new InvalidOperationException("Entity is locked by synchronization process, wait until synchronization finishes.");
+                    }
                 }
             }
 
