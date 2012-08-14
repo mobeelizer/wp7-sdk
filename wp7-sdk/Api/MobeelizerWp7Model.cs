@@ -19,7 +19,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         /// Model owner. 
         /// </summary>
         /// <value>Owner of current model.</value>
-        protected String owner
+        public String owner
         {
             get
             {
@@ -32,29 +32,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
                     return null;
                 }
             }
-
-            set
-            {
-
-                try
-                {
-                    using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
-                    {
-                        var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                        MobeelizerModelMetadata oldmetadata = query.Single();
-                        oldmetadata.Owner = value;
-                        transaction.SubmitChanges();
-                    }
-                }
-                catch { }
-            }
         }
 
         /// <summary>
         /// Conflicted flag.
         /// </summary>
         /// <value>True if model is in conflict.</value>
-        protected bool conflicted
+        public bool conflicted
         {
             get
             {
@@ -67,29 +51,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
                     return false;
                 }
             }
-
-            set
-            {
-
-                try
-                {
-                    using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
-                    {
-                        var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                        MobeelizerModelMetadata oldmetadata = query.Single();
-                        oldmetadata.Conflicted = value ? 1 : 0;
-                        transaction.SubmitChanges();
-                    }
-                }
-                catch { }
-            }
         }
 
         /// <summary>
         /// Modification flag.
         /// </summary>
         /// <value>True if model has been modified since last sync. </value>
-        protected bool modified
+        public bool modified
         {
             get
             {
@@ -102,28 +70,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
                     return false;
                 }
             }
-
-            set
-            {
-                try
-                {
-                    using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
-                    {
-                        var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                        MobeelizerModelMetadata oldmetadata = query.Single();
-                        oldmetadata.Modyfied = value ? 1 : 0;
-                        transaction.SubmitChanges();
-                    }
-                }
-                catch { }
-            }
         }
 
         /// <summary>
         /// Deleted flag.
         /// </summary>
         /// <value> True if model has been deleted since last sync.</value>
-        protected bool deleted
+        public bool deleted
         {
             get
             {
@@ -135,21 +88,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
                 {
                     return false;
                 }
-            }
-
-            set
-            {
-                try
-                {
-                    using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
-                    {
-                        var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                        MobeelizerModelMetadata oldmetadata = query.Single();
-                        oldmetadata.Deleted = value ? 1 : 0;
-                        transaction.SubmitChanges();
-                    }
-                }
-                catch { }
             }
         }
 
@@ -180,20 +118,24 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
             return (value as MobeelizerFile).GetJson();
         }
 
+        private MobeelizerModelMetadata metadata;
+
         private MobeelizerModelMetadata Metadata
         {
             get
             {
-                MobeelizerModelMetadata metadata = null;
-                try
+                if (this.metadata == null)
                 {
-                    using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
+                    try
                     {
-                        var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                        metadata = query.Single();
+                        using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
+                        {
+                            var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
+                            metadata = query.Single();
+                        }
                     }
+                    catch { }
                 }
-                catch { }
 
                 return metadata;
             }

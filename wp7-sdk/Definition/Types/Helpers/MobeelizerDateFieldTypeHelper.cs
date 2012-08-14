@@ -19,7 +19,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         internal override bool Supports(Type type)
         {
-            if (type == typeof(DateTime?))
+            if (type == typeof(DateTime?) || type == typeof(DateTime))
             {
                 return true;
             }

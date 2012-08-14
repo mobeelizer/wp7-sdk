@@ -19,7 +19,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
         protected override void SetNotNullValueFromMapToDatabase(IDictionary<string, object> values, string value, MobeelizerFieldAccessor field, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             Int32 intValue = Int32.Parse(value);
-
             values.Add(field.Name, intValue);
         }
 
@@ -65,7 +64,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         internal override bool Supports(Type type)
         {
-            if (type == typeof(int))
+            if (type == typeof(int) || type == typeof(int?))
             {
                 return true;
             }

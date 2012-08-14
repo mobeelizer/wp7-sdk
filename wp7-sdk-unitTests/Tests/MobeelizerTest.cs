@@ -73,12 +73,12 @@ namespace wp7_sdk_unitTests.Tests
             String justAddEntityGuid = string.Empty;
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departmentTable = db.GetModels<Department>();
+                var departmentTable = db.GetModelSet<Department>();
                 Department de = new Department();
                 de.internalNumber = 1;
                 de.name = "ddd";
                 departmentTable.InsertOnSubmit(de);
-                db.Commit();
+                db.SubmitChanges();
                 justAddEntityGuid = de.guid;
             }
 
@@ -94,7 +94,7 @@ namespace wp7_sdk_unitTests.Tests
 
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departmentTable = db.GetModels<Department>();
+                var departmentTable = db.GetModelSet<Department>();
                 var query = from d in departmentTable where d.guid == justAddEntityGuid select d;
                 try
                 {

@@ -42,12 +42,12 @@ namespace wp7_sdk_unitTests.Tests
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 Assert.IsInstanceOfType(new Employee(), typeof(MobeelizerWp7Model));
-                Assert.IsNotNull(db.GetModels<Employee>());
-                Assert.IsInstanceOfType(db.GetModels<Employee>(), typeof(ITable<Employee>));
+                Assert.IsNotNull(db.GetModelSet<Employee>());
+                Assert.IsInstanceOfType(db.GetModelSet<Employee>(), typeof(ITable<Employee>));
 
                 Assert.IsInstanceOfType(new Department(), typeof(MobeelizerWp7Model));
-                Assert.IsNotNull(db.GetModels<Department>());
-                Assert.IsInstanceOfType(db.GetModels<Department>(), typeof(ITable<Department>));
+                Assert.IsNotNull(db.GetModelSet<Department>());
+                Assert.IsInstanceOfType(db.GetModelSet<Department>(), typeof(ITable<Department>));
             }
         }
 
@@ -57,17 +57,17 @@ namespace wp7_sdk_unitTests.Tests
             String guid;
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departments = db.GetModels<Department>();
+                var departments = db.GetModelSet<Department>();
                 Department department = new Department();
                 department.name = "Dep1";
                 department.internalNumber = 333;
                 departments.InsertOnSubmit(department);
-                db.Commit();
+                db.SubmitChanges();
                 guid = department.guid;
             }
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
-            {    
-                var employees = db.GetModels<Employee>();
+            {
+                var employees = db.GetModelSet<Employee>();
                 Employee employee = new Employee();
                 employee.name = "NameNameNameNameNameNameNameNameNameNameName";
                 employee.surname = "Surname";
@@ -78,7 +78,7 @@ namespace wp7_sdk_unitTests.Tests
                 bool thrown = false;
                 try
                 {
-                    db.Commit();
+                    db.SubmitChanges();
                 }
 
                 catch (InvalidOperationException e)
@@ -98,17 +98,17 @@ namespace wp7_sdk_unitTests.Tests
         {
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departments = db.GetModels<Department>();
+                var departments = db.GetModelSet<Department>();
                 Department department = new Department();
                 department.name = "Dep1";
                 department.internalNumber = 333;
                 departments.InsertOnSubmit(department);
-                db.Commit();
+                db.SubmitChanges();
             }
 
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var employees = db.GetModels<Employee>();
+                var employees = db.GetModelSet<Employee>();
                 Employee employee = new Employee();
                 employee.name = "Name";
                 employee.surname = "Surname";
@@ -119,7 +119,7 @@ namespace wp7_sdk_unitTests.Tests
                 bool thrown = false;
                 try
                 {
-                    db.Commit();
+                    db.SubmitChanges();
                 }
                 catch (InvalidOperationException e)
                 {
@@ -137,27 +137,27 @@ namespace wp7_sdk_unitTests.Tests
             String justAddedGuid = string.Empty;
             using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departments = transaction.GetModels<Department>();
+                var departments = transaction.GetModelSet<Department>();
                 Department department = new Department()
                 {
                     name = "department",
                     internalNumber = 13
                 };
                 departments.InsertOnSubmit(department);
-                transaction.Commit();
+                transaction.SubmitChanges();
                 justAddedGuid = department.guid;
             }
 
             using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departments = transaction.GetModels<Department>();
+                var departments = transaction.GetModelSet<Department>();
                 departments.DeleteOnSubmit((from d in departments where d.guid == justAddedGuid select d).Single());
-                transaction.Commit();
+                transaction.SubmitChanges();
             }
 
             using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departments = transaction.GetModels<Department>();
+                var departments = transaction.GetModelSet<Department>();
                 var query = from d in departments where d.guid == justAddedGuid select d;
                 bool thrown = false;
                 try
@@ -179,27 +179,27 @@ namespace wp7_sdk_unitTests.Tests
             String justAddEntityGuid = string.Empty;
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var departmentTable = db.GetModels<Department>();
+                var departmentTable = db.GetModelSet<Department>();
                 Department de = new Department();
                 de.internalNumber = 1;
                 de.name = "ddd";
                 departmentTable.InsertOnSubmit(de);
-                db.Commit();
+                db.SubmitChanges();
                 justAddEntityGuid = de.guid;
             }
 
             using (IMobeelizerTransaction transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var employees = transaction.GetModels<Employee>();
+                var employees = transaction.GetModelSet<Employee>();
                 Employee employee = new Employee() { department = justAddEntityGuid, name = "name", position = "position", surname = "surname", salary = 13 };
                 employees.InsertOnSubmit(employee);
-                transaction.Commit();
+                transaction.SubmitChanges();
             }
 
             using (IMobeelizerTransaction transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
-                var employees = transaction.GetModels<Employee>();
-                var departments = transaction.GetModels<Department>();
+                var employees = transaction.GetModelSet<Employee>();
+                var departments = transaction.GetModelSet<Department>();
 
                 var query = from e in employees join d in departments on e.department equals d.guid select new { eName = e.name, dName = d.name };
                 int found = 0;

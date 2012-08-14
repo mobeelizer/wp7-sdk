@@ -7,11 +7,11 @@ using System.Resources;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("wp7_sdk")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Mobeelizer SDK for Windows Phone 7")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Mobeelizer")]
 [assembly: AssemblyProduct("wp7_sdk")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright © Mobeelizer 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

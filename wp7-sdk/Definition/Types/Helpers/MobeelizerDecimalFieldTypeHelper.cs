@@ -107,7 +107,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 
         internal override bool Supports(Type type)
         {
-            if (type == typeof(double))
+            if (type == typeof(double) || type == typeof(double?))
             {
                 return true;
             }

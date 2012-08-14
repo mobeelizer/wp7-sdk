@@ -19,12 +19,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             this.db = db;
         }
 
-        public ITable<T> GetModels<T>() where T : MobeelizerWp7Model
+        public ITable<T> GetModelSet<T>() where T : MobeelizerWp7Model
         {
             return dataContext.GetModels<T>();
         }
 
-        public void Commit()
+        public void SubmitChanges()
         {
             ChangeSet set = dataContext.GetChangeSet();
             IList<MobeelizerModelMetadata> metadataToAdd = new List<MobeelizerModelMetadata>();
@@ -35,16 +35,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             {
                 if (insert is MobeelizerWp7Model)
                 {
+                    MobeelizerWp7Model modelObject = insert as MobeelizerWp7Model;
                     MobeelizerErrorsHolder errors = new MobeelizerErrorsHolder();
-                    if (!db.ValidateEntity(insert as MobeelizerWp7Model, errors))
+                    if (!db.ValidateEntity(modelObject, errors))
                     {
                         throw new ArgumentException(errors.GetErrorsSymmary());
                     }
 
                     String model = insert.GetType().Name;
                     String guid = Guid.NewGuid().ToString();
-                    (insert as MobeelizerWp7Model).guid = guid;
                     String owner = db.User;
+                    modelObject.guid = guid;
                     MobeelizerModelMetadata metadata = new MobeelizerModelMetadata()
                     {
                         Model = model,
@@ -54,6 +55,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                         Deleted = 0,
                         Modyfied = 1
                     };
+                  //  modelObject.Set(metadata);
+
                     metadataToAdd.Add(metadata);
                 }
             }

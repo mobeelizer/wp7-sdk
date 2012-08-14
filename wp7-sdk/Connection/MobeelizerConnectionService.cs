@@ -30,7 +30,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         public IMobeelizerAuthenticateResponse Authenticate(string user, string password, String notificationChanelUri)
         {
-            WebRequest request = WebRequest.Create(GetUrl("/authenticate"));
+            WebRequest request = WebRequest.Create(GetUrl("/authenticate?cache="+Guid.NewGuid().ToString()));
             request.Method = "GET";
             SetHeaders(request, false, false);
             request.Headers["mas-user-name"] = user;

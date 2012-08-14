@@ -108,7 +108,9 @@
   <ItemGroup>
     <Content Include="app.config" />
     <None Include="Properties\AppManifest.xml" />
-    <None Include="Properties\WMAppManifest.xml" />
+    <None Include="Properties\WMAppManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Resources\SyncData\firstSync.zip" />
   </ItemGroup>
   <ItemGroup>

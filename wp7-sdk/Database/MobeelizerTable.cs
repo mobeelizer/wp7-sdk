@@ -58,17 +58,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         public System.Linq.Expressions.Expression Expression
         {
             get 
-            {
-                var query = from record in this.table join m in db.ModelMetadata on record.guid equals m.Guid where m.Deleted == 0 select record;
+            {   
+                Type type = typeof(T);
+                var query = (from record in this.table join m in db.ModelMetadata on record.guid equals m.Guid where m.Deleted == 0 select record);
                 return query.Expression;
             }
         }
+
 
         public IQueryProvider Provider
         {
             get { return this.table.Provider; }
         }
     }
-
-
 }

@@ -13,12 +13,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         /// </summary>
         /// <typeparam name="T">Model type.</typeparam>
         /// <returns>Collection of models.</returns>
-        ITable<T> GetModels<T>() where T : MobeelizerWp7Model;
+        ITable<T> GetModelSet<T>() where T : MobeelizerWp7Model;
 
         /// <summary>
         /// Submits all changes created in current transaction to database. 
         /// </summary>
-        void Commit();
+        void SubmitChanges();
 
         /// <summary>
         /// Closes transaction.
