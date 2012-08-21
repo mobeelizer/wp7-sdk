@@ -8,21 +8,33 @@ namespace wp7_sdk_unitTests.Models
     public class Employee : MobeelizerWp7Model
     {
         [Column(IsPrimaryKey = true)]
-        public override String guid { get; set; }
+        public override String Guid { get; set; }
 
         [Column()]
-        public String department { get; set; }
+        public override String Owner { get; set; }
 
         [Column()]
-        public String name { get; set; }
+        public override bool Conflicted { get; set; }
 
         [Column()]
-        public String position { get; set; }
+        public override bool Deleted { get; set; }
 
         [Column()]
-        public double salary { get; set; }
+        public override bool Modified { get; set; }
 
         [Column()]
-        public String surname { get; set; }
+        public String Department { get; set; }
+
+        [Column()]
+        public String Name { get; set; }
+
+        [Column()]
+        public String Position { get; set; }
+
+        [Column()]
+        public double Salary { get; set; }
+
+        [Column()]
+        public String Surname { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace wp7_sdk_unitTests.Models.test2
     public class Employee : MobeelizerWp7Model
     {
         [Column(IsPrimaryKey = true)]
-        public override String guid { get; set; }
+        public override String Guid { get; set; }
 
         [Column()]
         public String name { get; set; }

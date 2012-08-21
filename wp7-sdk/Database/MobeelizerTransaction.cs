@@ -28,7 +28,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             ChangeSet set = dataContext.GetChangeSet();
             IList<MobeelizerModelMetadata> metadataToAdd = new List<MobeelizerModelMetadata>();
-            IList<MobeelizerModelMetadata> metadataToUpdate = new List<MobeelizerModelMetadata>();
 
             foreach (var insert in set.Inserts)
             {
@@ -44,15 +43,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                     String model = insert.GetType().Name;
                     String guid = Guid.NewGuid().ToString();
                     String owner = db.User;
-                    modelObject.guid = guid;
+                    modelObject.Guid = guid;
+                    modelObject.Owner = owner;
+                    modelObject.Conflicted = false;
+                    modelObject.Deleted = false;
+                    modelObject.Modified = true;
                     MobeelizerModelMetadata metadata = new MobeelizerModelMetadata()
                     {
                         Model = model,
                         Guid = guid,
-                        Owner = owner,
-                        Conflicted = 0,
-                        Deleted = 0,
-                        Modyfied = 1
+                        ModificationLock = false
                     };
 
                     metadataToAdd.Add(metadata);
@@ -70,20 +70,19 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                     }
 
                     String model = update.GetType().Name;
-                    String guid = (update as MobeelizerWp7Model).guid;
+                    String guid = (update as MobeelizerWp7Model).Guid;
                     var query = from meta in dataContext.ModelMetadata where meta.Model == model && meta.Guid == guid select meta;
                     MobeelizerModelMetadata metadata = query.Single();
-                    if (metadata.Modyfied == 2)
+                    if (metadata.ModificationLock)
                     {
                         throw new InvalidOperationException("Entity is locked by synchronization process, wait until synchronization finishes.");
                     }
-
-                    metadataToUpdate.Add(metadata);
+                    (update as MobeelizerWp7Model).Modified = true;
                 }
                 else if (update is MobeelizerModelMetadata)
                 {
                     MobeelizerModelMetadata metadata = update as MobeelizerModelMetadata;
-                    if (metadata.Deleted == 1 && metadata.Modyfied == 2)
+                    if ((update as MobeelizerWp7Model).Deleted && metadata.ModificationLock)
                     {
                         throw new InvalidOperationException("Entity is locked by synchronization process, wait until synchronization finishes.");
                     }
@@ -93,11 +92,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             foreach (MobeelizerModelMetadata metadata in metadataToAdd)
             {
                 dataContext.ModelMetadata.InsertOnSubmit(metadata);
-            }
-
-            foreach (MobeelizerModelMetadata metadata in metadataToUpdate)
-            {
-                metadata.Modyfied = 1;
             }
 
             this.dataContext.SubmitChanges();

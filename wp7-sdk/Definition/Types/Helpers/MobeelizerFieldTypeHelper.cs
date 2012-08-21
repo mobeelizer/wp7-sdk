@@ -6,10 +6,21 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition.Types.Helpers
 {
     internal abstract class MobeelizerFieldTypeHelper
     {
+        private String GetFieldName(String propertyName)
+        {
+            String firstOne = propertyName.Substring(0, 1);
+            String tail = propertyName.Substring(1);
+            return firstOne.ToLower() + tail;
+        }
+
         internal void SetValueFromMapToDatabase(IDictionary<string, object> values, IDictionary<string, string> map, MobeelizerFieldAccessor field, bool required, IDictionary<string, string> options, MobeelizerErrorsHolder errors)
         {
             String value = null;
-            if (map.ContainsKey(field.Name))
+            if (map.ContainsKey(GetFieldName(field.Name)))
+            {
+                value = map[GetFieldName(field.Name)];
+            }
+            else if (map.ContainsKey(field.Name))
             {
                 value = map[field.Name];
             }

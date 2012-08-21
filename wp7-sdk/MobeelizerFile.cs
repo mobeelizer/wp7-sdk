@@ -42,5 +42,14 @@ namespace Com.Mobeelizer.Mobile.Wp7
             jobject.Add("guid", this.Guid);
             return jobject.ToString();
         }
+
+
+        public Uri Uri
+        {
+            get 
+            {
+                return Mobeelizer.Instance.GetFileService().GetFileUri(Guid);
+            }
+        }
     }
 }

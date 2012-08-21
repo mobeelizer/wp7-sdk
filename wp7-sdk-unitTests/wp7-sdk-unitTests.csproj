@@ -92,7 +92,6 @@
     <Compile Include="Tests\Definition\MobeelizerModelFieldDefinitionTest.cs" />
     <Compile Include="Tests\Definition\MobeelizerRoleDefinitionTest.cs" />
     <Compile Include="Tests\MobeelizerDatabaseTest.cs" />
-    <Compile Include="Tests\MobeelizerInternalDatabaseTest.cs" />
     <Compile Include="Tests\MobeelizerTest.cs" />
   </ItemGroup>
   <ItemGroup>

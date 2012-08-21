@@ -33,18 +33,18 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             MobeelizerJsonEntity entity = new MobeelizerJsonEntity();
             entity.Model = metadata.Model;
             entity.Guid = metadata.Guid;
-            entity.Owner = metadata.Owner;
             entity.Fields = new Dictionary<string, string>();
-            entity.Fields.Add("s_deleted", (metadata.Deleted == 0) ? "false" : "true");
-            var result = from MobeelizerWp7Model model in db.GetTable(this.Type) where model.guid == metadata.Guid select model;
+            var result = from MobeelizerWp7Model model in db.GetTable(this.Type) where model.Guid == metadata.Guid select model;
             MobeelizerWp7Model modelObject = result.Single();
+            entity.Owner = modelObject.Owner;
+            entity.Fields.Add("s_deleted", modelObject.Deleted.ToString().ToLower());
             foreach (MobeelizerField field in this.Fields)
             {
                 object value = null;
-                PropertyInfo property = modelObject.GetType().GetProperty(field.Name);
+                PropertyInfo property = modelObject.GetType().GetProperty(field.Accessor.Name);
                 if (property == null)
                 {
-                    throw new ConfigurationException("There is no property " + field.Name + " in " + entity.Model + " class.");
+                    throw new ConfigurationException("There is no property " + field.Accessor.Name + " in " + entity.Model + " class.");
                 }
 
                 value = property.GetValue(modelObject, null);
@@ -54,22 +54,29 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             return entity;
         }
 
+        private class QueryResult
+        {
+            public MobeelizerWp7Model Entity { get; set; }
+
+            public MobeelizerModelMetadata Metadata { get; set; }
+        }
+
         internal bool UpdateFromSync(MobeelizerJsonEntity entity, MobeelizerDatabaseContext db)
         {
-            var query = from MobeelizerModelMetadata m in db.ModelMetadata where m.Guid == entity.Guid && m.Model == this.Name select m;
+            var query = from MobeelizerWp7Model e in db.GetTable(this.Type) join MobeelizerModelMetadata m in db.ModelMetadata on e.Guid equals m.Guid where m.Guid == entity.Guid && m.Model == this.Name select new QueryResult() { Entity = e, Metadata = m };
             bool exists = true;
-            MobeelizerModelMetadata metadata = null;
+            QueryResult result = null;
             if (query.Count() == 0)
             {
                 exists = false;
             }
             else
             {
-                metadata = query.Single();
+                result = query.Single();
             }
 
             
-            bool modifiedByUser = exists && metadata.Modyfied == 1;
+            bool modifiedByUser = exists && result.Metadata.ModificationLock == false && result.Entity.Modified ;
 
             if (modifiedByUser || !exists && entity.IsDeleted)
             {
@@ -81,7 +88,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                 if (exists)
                 {
                     var table = db.GetTable(this.Type);
-                    table.DeleteAllOnSubmit(from MobeelizerWp7Model record in table where record.guid == entity.Guid select record);
+                    table.DeleteAllOnSubmit(from MobeelizerWp7Model record in table where record.Guid == entity.Guid select record);
                 }
 
                 return true;
@@ -90,8 +97,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             Dictionary<String, object> values = new Dictionary<string, object>();
             if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.IN_CONFLICT_BECAUSE_OF_YOU || entity.Fields.Count == 0)
             {
-                metadata.Conflicted = 1;
-                metadata.Modyfied = 0;
+                PropertyInfo property = this.Type.GetProperty("Conflicted");
+                PropertyInfo modifiedProperty = this.Type.GetProperty("Modified");
+                property.SetValue(result.Entity, true, null);
+                modifiedProperty.SetValue(result.Entity, false, null);
                 return true;
             }
             else if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.IN_CONFLICT)
@@ -104,7 +113,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             }
 
             values.Add("Owner", entity.Owner);
-            values.Add("Modyfied", 0);
+            values.Add("Modified", 0);
             try
             {
                 values.Add("Deleted", entity.IsDeleted ? 1 : 0);
@@ -127,11 +136,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
 
             if (exists)
             {
-                UpdateEntity(db, metadata, values, entity.Guid);
+                UpdateEntity(db, result.Metadata, values, entity.Guid, result.Entity);
             }
             else
             {
-                values.Add("guid", entity.Guid);
+                values.Add("Guid", entity.Guid);
                 InsertEntity(db, values);
             }
 
@@ -145,27 +154,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             var entity = Activator.CreateInstance(this.Type);
             foreach (KeyValuePair<String, object> value in values)
             {
-                if (value.Key == "guid")
+                if (value.Key == "Guid")
                 {
                     metadate.Guid = (String)value.Value;
-                    PropertyInfo property = this.Type.GetProperty("guid");
+                    PropertyInfo property = this.Type.GetProperty("Guid");
                     property.SetValue(entity, value.Value, null);
                 }
-                if (value.Key == "Conflicted")
+                if (value.Key == "Conflicted" || value.Key == "Deleted" || value.Key == "Modified")
                 {
-                    metadate.Conflicted = (Int32)value.Value;
-                }
-                else if (value.Key == "Modyfied")
-                {
-                    metadate.Modyfied = (Int32)value.Value;
-                }
-                else if (value.Key == "Deleted")
-                {
-                    metadate.Deleted = (Int32)value.Value;
-                }
-                else if (value.Key == "Owner")
-                {
-                    metadate.Owner = (String)value.Value;
+                    PropertyInfo property = this.Type.GetProperty(value.Key);
+                    property.SetValue(entity, ((Int32)value.Value == 1) ? true : false, null);
                 }
                 else
                 {
@@ -179,27 +177,14 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             Log.i("mobeelizermodel", "Add entity from sync " + metadate.Model + ", guid: "+ metadate.Guid);
         }
 
-        private void UpdateEntity(MobeelizerDatabaseContext db, MobeelizerModelMetadata metadate, IDictionary<String, object> values, String guid)
+        private void UpdateEntity(MobeelizerDatabaseContext db, MobeelizerModelMetadata metadate, IDictionary<String, object> values, String guid, MobeelizerWp7Model entity)
         {
-            var query = from MobeelizerWp7Model m in db.GetTable(this.Type) where m.guid == guid select m;
-            MobeelizerWp7Model entity = query.Single();
             foreach (KeyValuePair<String, object> value in values)
             {
-                if (value.Key == "Conflicted")
+                if (value.Key == "Conflicted" || value.Key == "Deleted" || value.Key == "Modified")
                 {
-                    metadate.Conflicted = (Int32)value.Value;
-                }
-                else if (value.Key == "Modyfied")
-                {
-                    metadate.Modyfied = (Int32)value.Value;
-                }
-                else if (value.Key == "Deleted")
-                {
-                    metadate.Deleted = (Int32)value.Value;
-                }
-                else if (value.Key == "Owner")
-                {
-                    metadate.Owner = (String)value.Value;
+                    PropertyInfo property = this.Type.GetProperty(value.Key);
+                    property.SetValue(entity, ((Int32)value.Value == 1) ? true : false, null);
                 }
                 else
                 {
@@ -232,7 +217,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             Type type = model.GetType();
             foreach (var filed in Fields)
             {
-                PropertyInfo info = type.GetProperty(filed.Name);
+                PropertyInfo info = type.GetProperty(filed.Accessor.Name);
                 values.Add(info.Name, info.GetValue(model,null));
             }
         }

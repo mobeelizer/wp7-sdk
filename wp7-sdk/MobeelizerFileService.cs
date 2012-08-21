@@ -170,5 +170,10 @@ namespace Com.Mobeelizer.Mobile.Wp7
             path = System.IO.Path.Combine(path, guid);
             return path;
         }
+
+        internal Uri GetFileUri(string guid)
+        {
+            return new Uri(this.PreparePath(guid), UriKind.Relative);
+        }
     }
 }

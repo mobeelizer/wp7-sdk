@@ -12,7 +12,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         
         private MobeelizerModelFieldCredentialsDefinition fieldCredentials;
         
-        MobeelizerFieldAccessor accesor;
+        private MobeelizerFieldAccessor accesor;
 
         internal MobeelizerField(Type type, Definition.MobeelizerModelFieldDefinition radField, Definition.MobeelizerModelFieldCredentialsDefinition fieldCredentials)
         {
@@ -20,11 +20,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             this.fieldCredentials = fieldCredentials;
             this.Name = radField.Name;
             this.FieldType = radField.Type;
-            this.accesor = new MobeelizerFieldAccessor(type, radField.Name);
-            PropertyInfo info = type.GetProperty(this.Name);
+            this.accesor = new MobeelizerFieldAccessor(type, GetPropertyName(this.Name));
+            PropertyInfo info = type.GetProperty(this.accesor.Name);
             if (info == null)
             {
-                throw new ConfigurationException("Model '"+ type.Name + "' does not contains property '"+ this.Name+"'.");
+                throw new ConfigurationException("Model '"+ type.Name + "' does not contains property '"+ this.accesor.Name+"'.");
             }
 
             if(!FieldType.Supports(info.PropertyType))
@@ -34,6 +34,14 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         }
 
         internal string Name { get; private set; }
+
+        internal MobeelizerFieldAccessor Accessor
+        {
+            get
+            {
+                return this.accesor;
+            }
+        }
 
         internal MobeelizerFieldType FieldType { get; private set; }
 
@@ -45,6 +53,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
         internal void Validate(Dictionary<string, object> values, MobeelizerErrorsHolder errors)
         {
             FieldType.Validate(values, accesor, this.field.IsRequired, field.Options, errors);
+        }
+
+        private String GetPropertyName(String fieldName)
+        {
+            String firstOne = fieldName.Substring(0, 1);
+            String tail = fieldName.Substring(1);
+            return firstOne.ToUpper() + tail;
         }
     }
 }

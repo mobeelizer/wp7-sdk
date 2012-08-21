@@ -75,11 +75,11 @@ namespace wp7_sdk_unitTests.Tests
             {
                 var departmentTable = db.GetModelSet<Department>();
                 Department de = new Department();
-                de.internalNumber = 1;
-                de.name = "ddd";
+                de.InternalNumber = 1;
+                de.Name = "ddd";
                 departmentTable.InsertOnSubmit(de);
                 db.SubmitChanges();
-                justAddEntityGuid = de.guid;
+                justAddEntityGuid = de.Guid;
             }
 
             MobeelizerSyncStatus status = MobeelizerSyncStatus.NONE;
@@ -95,7 +95,7 @@ namespace wp7_sdk_unitTests.Tests
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 var departmentTable = db.GetModelSet<Department>();
-                var query = from d in departmentTable where d.guid == justAddEntityGuid select d;
+                var query = from d in departmentTable where d.Guid == justAddEntityGuid select d;
                 try
                 {
                     foundObject = query.Single();

@@ -13,84 +13,32 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         /// Model guid.
         /// </summary>
         /// <value>Unique model identificatior.</value>
-        public virtual String guid { get; set; }
+        public virtual String Guid { get; set; }
 
         /// <summary>
         /// Model owner. 
         /// </summary>
         /// <value>Owner of current model.</value>
-        public String owner
-        {
-            get
-            {
-                if (this.Metadata != null)
-                {
-                    return this.Metadata.Owner;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        public virtual String Owner { get; set; }
 
         /// <summary>
         /// Conflicted flag.
         /// </summary>
         /// <value>True if model is in conflict.</value>
-        public bool conflicted
-        {
-            get
-            {
-                if (this.Metadata != null)
-                {
-                    return this.Metadata.Conflicted == 1;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
+        public virtual bool Conflicted { get; set; }
 
         /// <summary>
         /// Modification flag.
         /// </summary>
         /// <value>True if model has been modified since last sync. </value>
-        public bool modified
-        {
-            get
-            {
-                if (this.Metadata != null)
-                {
-                    return this.Metadata.Modyfied != 0;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
+        public virtual bool Modified { get; set; }
+        
         /// <summary>
         /// Deleted flag.
         /// </summary>
         /// <value> True if model has been deleted since last sync.</value>
-        public bool deleted
-        {
-            get
-            {
-                if (this.Metadata != null)
-                {
-                    return this.Metadata.Deleted != 0;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
+        public virtual bool Deleted { get; set; }
+        
         /// <summary>
         /// Opens file from json entity.
         /// </summary>
@@ -116,29 +64,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         protected String SetFile(IMobeelizerFile value)
         {
             return (value as MobeelizerFile).GetJson();
-        }
-
-        private MobeelizerModelMetadata metadata;
-
-        private MobeelizerModelMetadata Metadata
-        {
-            get
-            {
-                if (this.metadata == null)
-                {
-                    try
-                    {
-                        using (var transaction = Mobeelizer.Instance.GetDatabase().BeginInternalTransaction())
-                        {
-                            var query = from m in transaction.ModelMetadata where m.Guid == this.guid select m;
-                            metadata = query.Single();
-                        }
-                    }
-                    catch { }
-                }
-
-                return metadata;
-            }
         }
     }
 }

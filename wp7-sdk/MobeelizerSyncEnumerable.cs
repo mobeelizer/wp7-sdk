@@ -46,7 +46,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         {
             this.db =  new MobeelizerDatabaseContext( db.ConnectionString);
             this.models = models;
-            enumerator = (from meta in this.db.ModelMetadata where meta.Modyfied == 2 select meta).GetEnumerator();
+            enumerator = (from meta in this.db.ModelMetadata where meta.ModificationLock select meta).GetEnumerator();
         }
 
         public MobeelizerJsonEntity Current

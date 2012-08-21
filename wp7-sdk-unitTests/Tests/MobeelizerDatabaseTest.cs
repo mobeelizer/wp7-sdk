@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using Com.Mobeelizer.Mobile.Wp7;
@@ -23,6 +14,38 @@ namespace wp7_sdk_unitTests.Tests
     public class MobeelizerDatabaseTest
     {
         ManualResetEvent loginEvent = new ManualResetEvent(false);
+
+
+        [TestMethod]
+        public void SimpleTest()
+        {
+            using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
+            {
+                var departments = db.GetModelSet<Department>();
+                Department department = new Department();
+                department.Name = "Dep1";
+                department.InternalNumber = 333;
+                departments.InsertOnSubmit(department);
+                Department department2 = new Department();
+                department.Name = "Dep2";
+                department.InternalNumber = 333;
+                departments.InsertOnSubmit(department2);
+                Department department3 = new Department();
+                department.Name = "Dep3";
+                department.InternalNumber = 333;
+                departments.InsertOnSubmit(department3);
+                db.SubmitChanges();
+            }
+
+            using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
+            {
+                var query = from d in transaction.GetModelSet<Department>() select d;
+                foreach (Department dep in query)
+                {
+
+                }
+            }
+        }
 
         [TestMethod]
         public void _Init()
@@ -59,20 +82,20 @@ namespace wp7_sdk_unitTests.Tests
             {
                 var departments = db.GetModelSet<Department>();
                 Department department = new Department();
-                department.name = "Dep1";
-                department.internalNumber = 333;
+                department.Name = "Dep1";
+                department.InternalNumber = 333;
                 departments.InsertOnSubmit(department);
                 db.SubmitChanges();
-                guid = department.guid;
+                guid = department.Guid;
             }
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 var employees = db.GetModelSet<Employee>();
                 Employee employee = new Employee();
-                employee.name = "NameNameNameNameNameNameNameNameNameNameName";
-                employee.surname = "Surname";
-                employee.position = "Position";
-                employee.department = guid;
+                employee.Name = "NameNameNameNameNameNameNameNameNameNameName";
+                employee.Surname = "Surname";
+                employee.Position = "Position";
+                employee.Department = guid;
                 employees.InsertOnSubmit(employee);
                 String exceptionMessage = string.Empty;
                 bool thrown = false;
@@ -81,14 +104,14 @@ namespace wp7_sdk_unitTests.Tests
                     db.SubmitChanges();
                 }
 
-                catch (InvalidOperationException e)
+                catch (ArgumentException e)
                 {
                     thrown = true;
                     exceptionMessage = e.Message;
                 }
 
                 Assert.IsTrue(thrown);
-                Assert.IsTrue(exceptionMessage.Contains("name"));
+                Assert.IsTrue(exceptionMessage.Contains("Name"));
             }
         }
 
@@ -100,8 +123,8 @@ namespace wp7_sdk_unitTests.Tests
             {
                 var departments = db.GetModelSet<Department>();
                 Department department = new Department();
-                department.name = "Dep1";
-                department.internalNumber = 333;
+                department.Name = "Dep1";
+                department.InternalNumber = 333;
                 departments.InsertOnSubmit(department);
                 db.SubmitChanges();
             }
@@ -110,10 +133,10 @@ namespace wp7_sdk_unitTests.Tests
             {
                 var employees = db.GetModelSet<Employee>();
                 Employee employee = new Employee();
-                employee.name = "Name";
-                employee.surname = "Surname";
-                employee.position = "Position";
-                employee.department = "wrong guid";
+                employee.Name = "Name";
+                employee.Surname = "Surname";
+                employee.Position = "Position";
+                employee.Department = "wrong guid";
                 employees.InsertOnSubmit(employee);
                 String exceptionMessage = string.Empty;
                 bool thrown = false;
@@ -121,13 +144,13 @@ namespace wp7_sdk_unitTests.Tests
                 {
                     db.SubmitChanges();
                 }
-                catch (InvalidOperationException e)
+                catch (ArgumentException e)
                 {
                     thrown = true;
                     exceptionMessage = e.Message;
                 }
                 Assert.IsTrue(thrown);
-                Assert.IsTrue(exceptionMessage.Contains("department"));
+                Assert.IsTrue(exceptionMessage.Contains("Department"));
             }
         }
 
@@ -140,25 +163,26 @@ namespace wp7_sdk_unitTests.Tests
                 var departments = transaction.GetModelSet<Department>();
                 Department department = new Department()
                 {
-                    name = "department",
-                    internalNumber = 13
+                    Name = "department",
+                    InternalNumber = 13
                 };
                 departments.InsertOnSubmit(department);
                 transaction.SubmitChanges();
-                justAddedGuid = department.guid;
+                justAddedGuid = department.Guid;
             }
 
             using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 var departments = transaction.GetModelSet<Department>();
-                departments.DeleteOnSubmit((from d in departments where d.guid == justAddedGuid select d).Single());
+                departments.DeleteOnSubmit((from d in departments where d.Guid == justAddedGuid select d).Single());
                 transaction.SubmitChanges();
             }
 
             using (var transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 var departments = transaction.GetModelSet<Department>();
-                var query = from d in departments where d.guid == justAddedGuid select d;
+                var query = from d in departments where d.Guid == justAddedGuid select d;
+                
                 bool thrown = false;
                 try
                 {
@@ -181,17 +205,17 @@ namespace wp7_sdk_unitTests.Tests
             {
                 var departmentTable = db.GetModelSet<Department>();
                 Department de = new Department();
-                de.internalNumber = 1;
-                de.name = "ddd";
+                de.InternalNumber = 1;
+                de.Name = "ddd";
                 departmentTable.InsertOnSubmit(de);
                 db.SubmitChanges();
-                justAddEntityGuid = de.guid;
+                justAddEntityGuid = de.Guid;
             }
 
             using (IMobeelizerTransaction transaction = Mobeelizer.GetDatabase().BeginTransaction())
             {
                 var employees = transaction.GetModelSet<Employee>();
-                Employee employee = new Employee() { department = justAddEntityGuid, name = "name", position = "position", surname = "surname", salary = 13 };
+                Employee employee = new Employee() { Department = justAddEntityGuid, Name = "name", Position = "position", Surname = "surname", Salary = 13 };
                 employees.InsertOnSubmit(employee);
                 transaction.SubmitChanges();
             }
@@ -201,7 +225,7 @@ namespace wp7_sdk_unitTests.Tests
                 var employees = transaction.GetModelSet<Employee>();
                 var departments = transaction.GetModelSet<Department>();
 
-                var query = from e in employees join d in departments on e.department equals d.guid select new { eName = e.name, dName = d.name };
+                var query = from e in employees join d in departments on e.Department equals d.Guid select new { eName = e.Name, dName = d.Name };
                 int found = 0;
                 foreach (var result in query)
                 {

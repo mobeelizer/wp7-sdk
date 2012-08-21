@@ -26,11 +26,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 
         public void DeleteOnSubmit(T entity)
         {
-            String model = entity.GetType().Name;
-            String guid = (entity as MobeelizerWp7Model).guid;
-            var query = from meta in db.ModelMetadata where meta.Model == model && meta.Guid == guid select meta;
-            MobeelizerModelMetadata metadata = query.Single();
-            metadata.Deleted = 1;
+            String guid = entity.Guid;
+            var query = from MobeelizerWp7Model record in this.table where record.Guid == guid select record;
+            var result = query.Single();
+            result.Deleted = true;
         }
 
         public void InsertOnSubmit(T entity)
@@ -50,15 +49,17 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 
         public Type ElementType
         {
-            get { return this.table.ElementType; }
+            get 
+            { 
+                return this.table.ElementType; 
+            }
         }
 
         public System.Linq.Expressions.Expression Expression
         {
             get 
             {   
-                Type type = typeof(T);
-                var query = (from record in this.table join m in db.ModelMetadata on record.guid equals m.Guid where m.Deleted == 0 select record);
+                var query = (from record in this.table where record.Deleted == false select record);
                 return query.Expression;
             }
         }
@@ -66,7 +67,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
 
         public IQueryProvider Provider
         {
-            get { return this.table.Provider; }
+            get 
+            { 
+                return this.table.Provider; 
+            }
         }
     }
+
 }

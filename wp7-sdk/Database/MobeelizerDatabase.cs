@@ -65,7 +65,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             {
                 using (MobeelizerDatabaseContext dataContext = new MobeelizerDatabaseContext(this.ConnectionString))
                 {
-                    var table = from MobeelizerWp7Model m in dataContext.GetTable(models[modelName].Type) where m.guid == guid select m;
+                    var table = from MobeelizerWp7Model m in dataContext.GetTable(models[modelName].Type) where m.Guid == guid select m;
                     table.Single();
                 }
             }
@@ -109,10 +109,13 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             using (var transaction = this.BeginInternalTransaction())
             {
-                var metadata = from model in transaction.ModelMetadata where model.Modyfied == 1 select model;
-                foreach (var model in metadata)
+                foreach (var model in models.Values)
                 {
-                    model.Modyfied = 2;
+                    var metadata = from MobeelizerWp7Model m in transaction.GetTable(model.Type) join me in transaction.ModelMetadata on m.Guid equals me.Guid where m.Modified select me;
+                    foreach (var meta in metadata)
+                    {
+                        meta.ModificationLock = true;
+                    }
                 }
 
                 var files = from file in transaction.Files where file.Modyfied == 1 select file;
@@ -129,10 +132,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             using (var transaction = this.BeginInternalTransaction())
             {
-                var metadata = from model in transaction.ModelMetadata where model.Modyfied == 2 select model;
+                var metadata = from model in transaction.ModelMetadata where model.ModificationLock select model;
                 foreach (var model in metadata)
                 {
-                    model.Modyfied = 1;
+                    model.ModificationLock = false;
                 }
 
                 var files = from file in transaction.Files where file.Modyfied == 2 select file;
@@ -149,18 +152,23 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
         {
             using (var transaction = this.BeginInternalTransaction())
             {
-                var query = from metadata in transaction.ModelMetadata where metadata.Modyfied == 2 && metadata.Deleted == 1 && metadata.Conflicted == 0 select metadata;
-                foreach (var metadata in query)
+                foreach (var model in models)
                 {
-                    var modelQuery = from MobeelizerWp7Model model in transaction.GetTable(models[metadata.Model].Type) where model.guid == metadata.Guid select model;
-                    MobeelizerWp7Model modelObject = modelQuery.Single();
-                    transaction.GetTable(models[metadata.Model].Type).DeleteOnSubmit(modelObject);
+                    var query = from MobeelizerWp7Model m in transaction.GetTable(model.Value.Type) join metadata in transaction.ModelMetadata on m.Guid equals metadata.Guid  where metadata.ModificationLock && m.Deleted  && m.Conflicted == false select m; //TODO
+                    foreach (var modelObject in query)
+                    {
+                        transaction.GetTable(model.Value.Type).DeleteOnSubmit(modelObject);
+                    }
                 }
 
-                var query2 = from model in transaction.ModelMetadata where model.Modyfied == 2 select model;
-                foreach (var model in query2)
+                foreach (var model in models)
                 {
-                    model.Modyfied = 0;
+                    var query2 = from MobeelizerWp7Model m in transaction.GetTable(model.Value.Type) join me in transaction.ModelMetadata on m.Guid equals me.Guid where me.ModificationLock select new { metadata = me, entity = m };
+                    foreach (var result in query2)
+                    {
+                        result.metadata.ModificationLock = false;
+                        result.entity.Modified = false;
+                    }
                 }
 
                 var files = from file in transaction.Files where file.Modyfied == 2 select file;

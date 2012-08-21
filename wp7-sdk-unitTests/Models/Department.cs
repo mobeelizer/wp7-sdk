@@ -17,12 +17,24 @@ namespace wp7_sdk_unitTests.Models
     public class Department : MobeelizerWp7Model
     {
         [Column(IsPrimaryKey = true)]
-        public override String guid { get; set; }
+        public override String Guid { get; set; }
 
         [Column()]
-        public String name { get; set; }
+        public override String Owner { get; set; }
 
         [Column()]
-        public int internalNumber { get; set; }
+        public override bool Conflicted { get; set; }
+
+        [Column()]
+        public override bool Deleted { get; set; }
+
+        [Column()]
+        public override bool Modified { get; set; }
+
+        [Column()]
+        public String Name { get; set; }
+
+        [Column()]
+        public int InternalNumber { get; set; }
     }
 }
