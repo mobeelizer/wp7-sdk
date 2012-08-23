@@ -638,7 +638,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
                     callback(result);
                 }));
-            thread.Name = "Register for notification thread";
+            thread.Name = "Send notification thread";
             thread.Start();
         }
     }
