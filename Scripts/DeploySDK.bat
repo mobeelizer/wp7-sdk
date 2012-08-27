@@ -11,7 +11,7 @@ set TEMPDIR=%CD%\mobeelizer-wp7-sdk
 set OUTPUTPATH=%CD%\mobeelizer-wp7-sdk.zip
 del %OUTPUTPATH%
 mkdir %TEMPDIR%
-copy %CD%\%README% %TEMPDIR%
+copy %CD%\DeployHelpers\%README% %TEMPDIR%
 cd ..\
 copy %CD%\wp7-sdk\Bin\Release\%WP7SDK_DLL% %TEMPDIR%
 copy %CD%\wp7-sdk\Bin\Release\%CONFIGURE_DLL% %TEMPDIR%
@@ -42,7 +42,7 @@ del _zipIt.vbs
 
 echo Zip file prepared!
 
-cd Scripts
+cd Scripts\DeployHelpers
 UploadSDK.exe %SECRET_ID_KEY_PATH% %OUTPUTPATH% %BUCKET_NAME%
 
 pause
