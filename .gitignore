@@ -58,3 +58,6 @@ packages/
 
 # visual studio database projects
 *.dbmdl
+
+# Amazon S3 secret 
+.s3upload
