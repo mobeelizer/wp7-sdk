@@ -14,9 +14,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
     {
         private const String TAG = "mobeelizer:connectionService";
 
-        private const String DEFAULT_PRODUCTION_URL = "http://cloud.mobeelizer.com/sync";
+        private const String DEFAULT_PRODUCTION_URL = "https://cloud.mobeelizer.com/sync/v2";
 
-        private const String DEFAULT_TEST_URL = "http://cloud.mobeelizer.com/sync";
+        private const String DEFAULT_TEST_URL = "https://cloud.mobeelizer.com/sync/v2";
 
         private MobeelizerApplication application;
 
@@ -38,12 +38,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             try
             {
 
-                JObject result = new Synchronizer().GetJsonResponse(request);
-                String status = (String)result["status"];
-                if (status == "OK")
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    JObject content = (JObject)result["content"];
-                    return new MobeelizerAuthenticateResponse((String)content["instanceGuid"], (String)content["role"]);
+                    JObject jObject = (result as MobeelizerJsonResponse).Json;
+                    return new MobeelizerAuthenticateResponse((String)jObject["instanceGuid"], (String)jObject["role"]);
                 }
                 else
                 {
@@ -124,21 +123,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             SetHeaders(request, true, true);
             try
             {
-                JObject response = new Synchronizer().GetJsonResponse(request);
-                return (String)response["content"];
-            }
-            catch (WebException e)
-            {
-                String message;
-                using (Stream stream = e.Response.GetResponseStream())
+                MobeelizerResponse response = new Synchronizer().GetResponse(request);
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        message = reader.ReadToEnd();
-                    }
-
+                    return (response as MobeelizerTicketResponse).Ticket;
                 }
-                throw new IOException(message, e);
+                else
+                {
+                    throw new IOException(response.StatusCode.ToString() + ": " + (response as MobeelizerJsonResponse).Json.ToString());
+                }
             }
             catch (NullReferenceException)
             {
@@ -173,21 +166,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             SetHeaders(request, false, true);
             try
             {
-                JObject response = new Synchronizer().GetJsonResponse(request);
-                return (String)response["content"];
-            }
-            catch (WebException e)
-            {
-                String message;
-                using (Stream stream = e.Response.GetResponseStream())
+                MobeelizerResponse response = new Synchronizer().GetResponse(request);
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        message = reader.ReadToEnd();
-                    }
-
+                    return (response as MobeelizerTicketResponse).Ticket;
                 }
-                throw new IOException(message, e);
+                else
+                {
+                    throw new IOException(response.StatusCode.ToString() + ": " + (response as MobeelizerJsonResponse).Json.ToString());
+                }
             }
             catch (NullReferenceException)
             {
@@ -237,10 +224,10 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             WebRequest request = WebRequest.Create(GetUrl(String.Format("/confirm?ticket={0}", ticket)));
             request.Method = "POST";
             SetHeaders(request, false, true);
-            JObject result = new Synchronizer().GetJsonResponse(request);
-            if (result == null || (String)result["status"] != "OK")
+            MobeelizerResponse result = new Synchronizer().GetResponse(request);
+            if (result == null || result.StatusCode != HttpStatusCode.OK)
             {
-                throw new IOException("Unable to confirm synchronization.");
+                throw new IOException("Unable to confirm synchronization. "+ result.StatusCode.ToString() + ": " + (result as MobeelizerJsonResponse).Json.ToString());
             }
         }
 
@@ -253,17 +240,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 request.Method = "GET";
                 SetHeaders(request, false, true);
 
-                JObject jResult = new Synchronizer().GetJsonResponse(request);
-                String status = (String)jResult["status"];
-                if (status == "OK")
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result.StatusCode == HttpStatusCode.OK)
                 {
-                    JObject content = (JObject)jResult["content"];
-                    String strSyncStatus = (String)content["status"];
+                    String strSyncStatus = (String)(result as MobeelizerJsonResponse).Json["status"];
                     sycStatus = (MobeelizerSynchronizationStatus)Enum.Parse(typeof(MobeelizerSynchronizationStatus), strSyncStatus, true);
                 }
                 else
                 {
-                    throw new IOException(jResult.ToString());
+                    throw new IOException(result.StatusCode.ToString() + ": " + (result as MobeelizerJsonResponse).Json.ToString());
                 }
 
                 if (sycStatus == MobeelizerSynchronizationStatus.REJECTED || sycStatus == MobeelizerSynchronizationStatus.CONFIRMED)
@@ -338,8 +323,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             SetHeaders(request, true, true);
             try
             {
-                JObject result = new Synchronizer().GetJsonResponse(request);
-                if (result == null || (String)result["status"] != "OK")
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result == null || result.StatusCode != HttpStatusCode.OK)
                 {
                     throw new IOException("Unable to register for remote notification.");
                 }
@@ -360,8 +345,8 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             SetHeaders(request, true, true);
             try
             {
-                JObject result = new Synchronizer().GetJsonResponse(request);
-                if (result == null || (String)result["status"] != "OK")
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result == null || result.StatusCode != HttpStatusCode.OK)
                 {
                     throw new IOException("Unable to unregister for remote notification.");
                 }
@@ -401,28 +386,26 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     logBuilder.Append(" everyone");
                 }
                 JObject jnotification = new JObject();
-                foreach(var notify in notification)
+                foreach (var notify in notification)
                 {
                     jnotification.Add(notify.Key, notify.Value);
                 }
 
                 jobject.Add("notification", jnotification);
-                try
-                {
-                    WebRequest request = WebRequest.Create(GetUrl("/push"));
-                    request.Method = "POST";
-                    using (Stream stream = new Synchronizer().GetRequestStream(request))
-                    {
-                        byte[] notificationMessage = Encoding.UTF8.GetBytes(jobject.ToString());
-                        stream.Write(notificationMessage, 0, notificationMessage.Length);
-                    }
 
-                    SetHeaders(request, true, true);
-                    JObject result = new Synchronizer().GetJsonResponse(request);
-                }
-                catch (WebException e)
+                WebRequest request = WebRequest.Create(GetUrl("/push"));
+                request.Method = "POST";
+                using (Stream stream = new Synchronizer().GetRequestStream(request))
                 {
-                    throw new IOException(e.Message, e);
+                    byte[] notificationMessage = Encoding.UTF8.GetBytes(jobject.ToString());
+                    stream.Write(notificationMessage, 0, notificationMessage.Length);
+                }
+
+                SetHeaders(request, true, true);
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new IOException((result as MobeelizerJsonResponse).Json.ToString());
                 }
 
                 Log.i(TAG, logBuilder.ToString());
@@ -433,13 +416,28 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
+        private abstract class MobeelizerResponse
+        {
+            public HttpStatusCode StatusCode { get; set; }
+        }
+
+        private class MobeelizerJsonResponse : MobeelizerResponse
+        {
+            public JObject Json { get; set; }
+        }
+
+        private class MobeelizerTicketResponse : MobeelizerResponse
+        {
+            public String Ticket { get; set; }
+        }
+
         private class Synchronizer
         {
             private ManualResetEvent allDone = new ManualResetEvent(false);
 
-            internal JObject GetJsonResponse(WebRequest request)
+            internal MobeelizerResponse GetResponse(WebRequest request)
             {
-                JObject result = null;
+                MobeelizerResponse result = null;
                 Exception exception = null;
                 try
                 {
@@ -447,14 +445,35 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     {
                         try
                         {
-                            using (WebResponse response = request.EndGetResponse(a))
+                            using (HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(a))
                             {
-                                result = (JObject)GetJsonObject(response);
+                                using (Stream str = response.GetResponseStream())
+                                {
+                                    try
+                                    {
+                                        JObject json = GetJsonObject(str);
+                                        result = new MobeelizerJsonResponse() { Json = json };
+                                    }
+                                    catch (JsonReaderException)
+                                    {
+                                            str.Seek(0, SeekOrigin.Begin);
+                                            result = new MobeelizerTicketResponse() { Ticket = new StreamReader(str).ReadToEnd() }; 
+                                    }
+                                }
+
+                                result.StatusCode = (response).StatusCode;
                             }
                         }
                         catch (WebException e)
                         {
-                            exception = e;
+                            using (WebResponse response = e.Response)
+                            {
+                                using (Stream str = response.GetResponseStream())
+                                {
+                                    result = new MobeelizerJsonResponse() { Json = GetJsonObject(str) };
+                                }
+                                result.StatusCode = (response as HttpWebResponse).StatusCode;
+                            }
                         }
                         catch (JsonReaderException e)
                         {
@@ -466,7 +485,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 catch (WebException e)
                 {
                     throw new IOException(e.Message, e);
-
                 }
 
                 allDone.WaitOne();
@@ -490,16 +508,12 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 return stream;
             }
 
-            private JObject GetJsonObject(WebResponse response)
+            private JObject GetJsonObject(Stream stream)
             {
                 JObject obj = new JObject();
-                using (Stream stream = response.GetResponseStream())
-                {
-                    StreamReader reader = new StreamReader(stream);
-                    String str = reader.ReadToEnd();
-                    obj = JObject.Parse(str);
-                }
-
+                StreamReader reader = new StreamReader(stream);
+                String str = reader.ReadToEnd();
+                obj = JObject.Parse(str);
                 return obj;
             }
 
