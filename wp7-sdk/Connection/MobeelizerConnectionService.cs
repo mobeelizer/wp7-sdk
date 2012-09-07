@@ -37,59 +37,34 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             request.Headers["mas-user-password"] = password;
             try
             {
-
                 MobeelizerResponse result = new Synchronizer().GetResponse(request);
                 if (result.StatusCode == HttpStatusCode.OK)
                 {
                     JObject jObject = (result as MobeelizerJsonResponse).Json;
                     return new MobeelizerAuthenticateResponse((String)jObject["instanceGuid"], (String)jObject["role"]);
                 }
+                else if(result.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return new MobeelizerAuthenticateResponse(MobeelizerOperationError.ServerError((result as MobeelizerJsonResponse).Json));
+                }
                 else
                 {
-                    return null;
+                    throw new IOException("Http connection status code: " + result.StatusCode.ToString());
                 }
-
             }
             catch (WebException e)
             {
-                using (WebResponse response = e.Response)
-                {
-
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
-                    {
-                        String str = reader.ReadToEnd();
-                        if (str.Contains("Authentication failure"))
-                        {
-                            return null;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException(str, e);
-                        }
-                    }
-                }
+                return new MobeelizerAuthenticateResponse(MobeelizerOperationError.ConnectionError(e.Message));
             }
             catch (JsonException e)
             {
-                throw new InvalidOperationException(e.Message, e);
+                return new MobeelizerAuthenticateResponse(MobeelizerOperationError.Other(e.Message));
             }
         }
 
         public IMobeelizerAuthenticateResponse Authenticate(string user, string password)
         {
             return this.Authenticate(user, password, null);
-        }
-
-        private JObject GetJsonObject(WebResponse response)
-        {
-            JObject obj = new JObject();
-            using (Stream stream = response.GetResponseStream())
-            {
-                StreamReader reader = new StreamReader(stream);
-                String str = reader.ReadToEnd();
-                obj = JObject.Parse(str);
-            }
-            return obj;
         }
 
         private String GetUrl(String url)
@@ -116,7 +91,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
-        public String SendSyncAllRequest()
+        public MobeelizerSyncResponse SendSyncAllRequest()
         {
             WebRequest request = WebRequest.Create(GetUrl("/synchronizeAll"));
             request.Method = "POST";
@@ -126,11 +101,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 MobeelizerResponse response = new Synchronizer().GetResponse(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return (response as MobeelizerTicketResponse).Ticket;
+                    return new MobeelizerSyncResponse((response as MobeelizerTicketResponse).Ticket);
+                }
+                else if (response.StatusCode == HttpStatusCode.InternalServerError)
+                { 
+                    return new MobeelizerSyncResponse(MobeelizerOperationError.ServerError((response as MobeelizerJsonResponse).Json));
                 }
                 else
                 {
-                    throw new IOException(response.StatusCode.ToString() + ": " + (response as MobeelizerJsonResponse).Json.ToString());
+                    throw new IOException("Http connection status code: " + response.StatusCode.ToString());
                 }
             }
             catch (NullReferenceException)
@@ -139,7 +118,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
-        public String SendSyncDiffRequest(Others.File outputFile)
+        public MobeelizerSyncResponse SendSyncDiffRequest(Others.File outputFile)
         { 
             String boundary = DateTime.Now.Ticks.ToString();
 
@@ -169,11 +148,15 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 MobeelizerResponse response = new Synchronizer().GetResponse(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return (response as MobeelizerTicketResponse).Ticket;
+                    return new MobeelizerSyncResponse((response as MobeelizerTicketResponse).Ticket);
+                }
+                else if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return new MobeelizerSyncResponse(MobeelizerOperationError.ServerError((response as MobeelizerJsonResponse).Json));
                 }
                 else
                 {
-                    throw new IOException(response.StatusCode.ToString() + ": " + (response as MobeelizerJsonResponse).Json.ToString());
+                    throw new IOException("Http connection status code: " + response.StatusCode.ToString());
                 }
             }
             catch (NullReferenceException)
@@ -182,7 +165,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
-        public Others.File GetSyncData(string ticket)
+        public MobeelizerGetSyncDataOperationResult GetSyncData(string ticket)
         {
             WebRequest request = WebRequest.Create(GetUrl(String.Format("/data?ticket={0}", ticket)));
             request.Method = "GET";
@@ -191,14 +174,26 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             {
                 Others.File inputFile = GetInputFileStream();
                 inputFile.Create();
-                using (Stream stream = new Synchronizer().GetResponseData(request))
+                MobeelizerResponse response = new Synchronizer().GetResponseData(request);
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    using (IsolatedStorageFileStream inputStream = inputFile.OpenToWrite())
+                    using (Stream stream = (response as MobeelizerDataResponse).Data)
                     {
-                        stream.CopyTo(inputStream);
+                        using (IsolatedStorageFileStream inputStream = inputFile.OpenToWrite())
+                        {
+                            stream.CopyTo(inputStream);
+                        }
                     }
+                    return new MobeelizerGetSyncDataOperationResult(inputFile);
                 }
-                return inputFile;
+                else if (response.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return new MobeelizerGetSyncDataOperationResult(MobeelizerOperationError.ServerError((response as MobeelizerJsonResponse).Json));
+                }
+                else
+                {
+                    throw new IOException("Http connection status code: " + response.StatusCode.ToString());
+                }
             }
             catch (WebException e)
             {
@@ -231,7 +226,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             }
         }
 
-        public bool WaitUntilSyncRequestComplete(string ticket)
+        public MobeelizerOperationError WaitUntilSyncRequestComplete(string ticket)
         {
             MobeelizerSynchronizationStatus sycStatus = MobeelizerSynchronizationStatus.REJECTED;
             for (int i = 0; i < 100; i++)
@@ -253,11 +248,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
                 if (sycStatus == MobeelizerSynchronizationStatus.REJECTED || sycStatus == MobeelizerSynchronizationStatus.CONFIRMED)
                 {
-                    return false;
+                    return MobeelizerOperationError.SyncRejected((String)(result as MobeelizerJsonResponse).Json["message"], (String)(result as MobeelizerJsonResponse).Json["result"]);
                 }
                 else if (sycStatus == MobeelizerSynchronizationStatus.FINISHED)
                 {
-                    return true;
+                    return null;
                 }
 
                 try
@@ -270,7 +265,122 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 }
             }
 
-            return false;
+            return MobeelizerOperationError.Other("Sync timeout.");;
+        }
+
+        public MobeelizerOperationError RegisterForRemoteNotifications(string channelUri)
+        {
+            String token = this.tokenConverter.Convert(channelUri);
+            WebRequest request = WebRequest.Create(GetUrl(String.Format("/registerPushToken?deviceToken={0}&deviceType=wp7", token)));
+            request.Method = "POST";
+            SetHeaders(request, true, true);
+            try
+            {
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    Log.i(TAG, "Registered for remote notifications with chanel: " + channelUri);
+                    return null;
+                }
+                else if (result.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return MobeelizerOperationError.ServerError((result as MobeelizerJsonResponse).Json);
+                }
+                else
+                {
+                    throw new IOException("Http connection status code: " + result.StatusCode.ToString());
+                }
+            }
+            catch (WebException e)
+            {
+                throw new IOException(e.Message, e);
+            }
+        }
+
+        public MobeelizerOperationError UnregisterForRemoteNotifications(string channelUri)
+        {
+            String token = this.tokenConverter.Convert(channelUri);
+            WebRequest request = WebRequest.Create(GetUrl(String.Format("/unregisterPushToken?deviceToken={0}&deviceType=wp7", token)));
+            request.Method = "POST";
+            SetHeaders(request, true, true);
+            try
+            {
+                MobeelizerResponse result = new Synchronizer().GetResponse(request);
+                if (result.StatusCode == HttpStatusCode.OK)
+                {
+                    Log.i(TAG, "Unregistered for remote notifications with chanel: " + channelUri);
+                    return null;
+                }
+                else if (result.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    return MobeelizerOperationError.ServerError((result as MobeelizerJsonResponse).Json);
+                }
+                else
+                {
+                    throw new IOException("Http connection status code: " + result.StatusCode.ToString());
+                }
+            }
+            catch (WebException e)
+            {
+                throw new IOException(e.Message, e);
+            }
+        }
+
+        public MobeelizerOperationError SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification)
+        {
+            JObject jobject = new JObject();
+            StringBuilder logBuilder = new StringBuilder();
+            logBuilder.Append("Sent remote notification ").Append(notification).Append(" to");
+            if (device != null)
+            {
+                jobject.Add("device", device);
+                logBuilder.Append(" device: ").Append(device);
+            }
+            if (group != null)
+            {
+                jobject.Add("group", group);
+                logBuilder.Append(" group: ").Append(group);
+            }
+            if (users != null)
+            {
+                jobject.Add("users", new JArray(users));
+                logBuilder.Append(" users: ").Append(users);
+            }
+            if (device == null && group == null && users == null)
+            {
+                logBuilder.Append(" everyone");
+            }
+            JObject jnotification = new JObject();
+            foreach (var notify in notification)
+            {
+                jnotification.Add(notify.Key, notify.Value);
+            }
+
+            jobject.Add("notification", jnotification);
+
+            WebRequest request = WebRequest.Create(GetUrl("/push"));
+            request.Method = "POST";
+            using (Stream stream = new Synchronizer().GetRequestStream(request))
+            {
+                byte[] notificationMessage = Encoding.UTF8.GetBytes(jobject.ToString());
+                stream.Write(notificationMessage, 0, notificationMessage.Length);
+            }
+
+            SetHeaders(request, true, true);
+            MobeelizerResponse result = new Synchronizer().GetResponse(request);
+            if (result.StatusCode == HttpStatusCode.OK)
+            {
+                Log.i(TAG, logBuilder.ToString());
+                return null;
+            }
+            else if (result.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                return MobeelizerOperationError.ServerError((result as MobeelizerJsonResponse).Json);
+            }
+            else
+            {
+                throw new IOException("Http connection status code: " + result.StatusCode.ToString());
+            }
         }
 
         private Others.File GetInputFileStream()
@@ -315,108 +425,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
             request.Headers["mas-sdk-version"] = Mobeelizer.VERSION;
         }
 
-        public void RegisterForRemoteNotifications(string channelUri)
-        {
-            String token = this.tokenConverter.Convert(channelUri);
-            WebRequest request = WebRequest.Create(GetUrl(String.Format("/registerPushToken?deviceToken={0}&deviceType=wp7", token)));
-            request.Method = "POST";
-            SetHeaders(request, true, true);
-            try
-            {
-                MobeelizerResponse result = new Synchronizer().GetResponse(request);
-                if (result == null || result.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new IOException("Unable to register for remote notification.");
-                }
-            }
-            catch (WebException e)
-            {
-                throw new IOException(e.Message, e);
-            }
-
-            Log.i(TAG, "Registered for remote notifications with chanel: " + channelUri);
-        }
-
-        public void UnregisterForRemoteNotifications(string channelUri)
-        {
-            String token = String.Format("{0:X}", channelUri);
-            WebRequest request = WebRequest.Create(GetUrl(String.Format("/unregisterPushToken?deviceToken={0}&deviceType=wp7", channelUri)));
-            request.Method = "POST";
-            SetHeaders(request, true, true);
-            try
-            {
-                MobeelizerResponse result = new Synchronizer().GetResponse(request);
-                if (result == null || result.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new IOException("Unable to unregister for remote notification.");
-                }
-            }
-            catch (WebException e)
-            {
-                throw new IOException(e.Message, e);
-            }
-
-            Log.i(TAG, "Unregistered for remote notifications with chanel: " + channelUri);
-        }
-
-        public void SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification)
-        {
-            try
-            {
-                JObject jobject = new JObject();
-                StringBuilder logBuilder = new StringBuilder();
-                logBuilder.Append("Sent remote notification ").Append(notification).Append(" to");
-                if (device != null)
-                {
-                    jobject.Add("device", device);
-                    logBuilder.Append(" device: ").Append(device);
-                }
-                if (group != null)
-                {
-                    jobject.Add("group", group);
-                    logBuilder.Append(" group: ").Append(group);
-                }
-                if (users != null)
-                {
-                    jobject.Add("users", new JArray(users));
-                    logBuilder.Append(" users: ").Append(users);
-                }
-                if (device == null && group == null && users == null)
-                {
-                    logBuilder.Append(" everyone");
-                }
-                JObject jnotification = new JObject();
-                foreach (var notify in notification)
-                {
-                    jnotification.Add(notify.Key, notify.Value);
-                }
-
-                jobject.Add("notification", jnotification);
-
-                WebRequest request = WebRequest.Create(GetUrl("/push"));
-                request.Method = "POST";
-                using (Stream stream = new Synchronizer().GetRequestStream(request))
-                {
-                    byte[] notificationMessage = Encoding.UTF8.GetBytes(jobject.ToString());
-                    stream.Write(notificationMessage, 0, notificationMessage.Length);
-                }
-
-                SetHeaders(request, true, true);
-                MobeelizerResponse result = new Synchronizer().GetResponse(request);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    throw new IOException((result as MobeelizerJsonResponse).Json.ToString());
-                }
-
-                Log.i(TAG, logBuilder.ToString());
-            }
-            catch (JsonException)
-            {
-                //  throw new IOException(e.getMessage(), e);
-            }
-        }
-
-        private abstract class MobeelizerResponse
+        private class MobeelizerResponse
         {
             public HttpStatusCode StatusCode { get; set; }
         }
@@ -429,6 +438,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
         private class MobeelizerTicketResponse : MobeelizerResponse
         {
             public String Ticket { get; set; }
+        }
+
+        private class MobeelizerDataResponse : MobeelizerResponse
+        {
+            public Stream Data { get; set; }
         }
 
         private class Synchronizer
@@ -468,9 +482,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                         {
                             using (WebResponse response = e.Response)
                             {
-                                using (Stream str = response.GetResponseStream())
+                                if ((response as HttpWebResponse).StatusCode == HttpStatusCode.InternalServerError)
                                 {
-                                    result = new MobeelizerJsonResponse() { Json = GetJsonObject(str) };
+                                    using (Stream str = response.GetResponseStream())
+                                    {
+                                        result = new MobeelizerJsonResponse() { Json = GetJsonObject(str) };
+                                    }
+                                }
+                                else
+                                {
+                                    result = new MobeelizerResponse();
                                 }
                                 result.StatusCode = (response as HttpWebResponse).StatusCode;
                             }
@@ -517,9 +538,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 return obj;
             }
 
-            internal Stream GetResponseData(WebRequest request)
+            internal MobeelizerResponse GetResponseData(WebRequest request)
             {
-                Stream stream = null;
+                MobeelizerResponse getResponse = null;
                 WebException exception = null;
                 try
                 {
@@ -527,14 +548,23 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     {
                         try
                         {
+                            
                             using (WebResponse response = request.EndGetResponse(a))
                             {
-                                stream = response.GetResponseStream();
+                                getResponse = new MobeelizerDataResponse() { Data = response.GetResponseStream() };
+                                getResponse.StatusCode = (response as HttpWebResponse).StatusCode;
                             }
                         }
                         catch (WebException e)
                         {
-                            exception = e;
+                            using (WebResponse response = e.Response)
+                            {
+                                using (Stream str = response.GetResponseStream())
+                                {
+                                    getResponse = new MobeelizerJsonResponse() { Json = GetJsonObject(str) };
+                                }
+                                getResponse.StatusCode = (response as HttpWebResponse).StatusCode;
+                            }
                         }
                         allDone.Set();
                     }, null);
@@ -542,7 +572,6 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                 catch (WebException e)
                 {
                     throw new IOException(e.Message, e);
-
                 }
 
                 allDone.WaitOne(TimeSpan.FromSeconds(30));
@@ -551,7 +580,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
                     throw exception;
                 }
 
-                return stream;
+                return getResponse;
             }
         }
     }

@@ -92,7 +92,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 Log.i(TAG, "Restoring saved application state.");
                 if (state.LoggedIn)
                 {
-                    if (application.OfflineLogin(state.Instance, state.User, state.Password) == MobeelizerLoginStatus.OK)
+                    if (application.OfflineLogin(state.Instance, state.User, state.Password) == null)
                     {
                         switch(state.SyncStatus)
                         {
@@ -158,7 +158,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 Log.i(TAG, "Clearing modyfication flag.");
                 if (state.LoggedIn)
                 {
-                    if (application.OfflineLogin(state.Instance, state.User, state.Password) == MobeelizerLoginStatus.OK)
+                    if (application.OfflineLogin(state.Instance, state.User, state.Password) == null)
                     {
                         switch (state.SyncStatus)
                         {

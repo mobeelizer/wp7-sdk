@@ -12,8 +12,16 @@ using System.IO;
 
 namespace wp7_sdk_unitTests.Helpers.Mock
 {
-    public class UTWebResponse : WebResponse
+    public class UTWebResponse : HttpWebResponse
     {
+        public override HttpStatusCode StatusCode
+        {
+            get
+            {
+                return HttpStatusCode.OK;
+            }
+        }
+
         private Stream stream;
 
         public UTWebResponse(Stream stream)

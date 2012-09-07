@@ -1,4 +1,5 @@
 ﻿using System;
+using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace Com.Mobeelizer.Mobile.Wp7.Connection
 {
@@ -8,20 +9,20 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
         IMobeelizerAuthenticateResponse Authenticate(string user, string password);
 
-        String SendSyncAllRequest();
+        MobeelizerSyncResponse SendSyncAllRequest();
 
-        String SendSyncDiffRequest(Others.File outputFile);
+        MobeelizerSyncResponse SendSyncDiffRequest(Others.File outputFile);
 
-        Others.File GetSyncData(string ticket);
+        MobeelizerGetSyncDataOperationResult GetSyncData(string ticket);
 
         void ConfirmTask(string ticket);
 
-        bool WaitUntilSyncRequestComplete(string ticket);
+        MobeelizerOperationError WaitUntilSyncRequestComplete(string ticket);
 
-        void RegisterForRemoteNotifications(string channelUri);
+        MobeelizerOperationError RegisterForRemoteNotifications(string channelUri);
 
-        void UnregisterForRemoteNotifications(string channelUri);
+        MobeelizerOperationError UnregisterForRemoteNotifications(string channelUri);
 
-        void SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification);
+        MobeelizerOperationError SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification);
     }
 }

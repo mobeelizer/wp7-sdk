@@ -1,13 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Com.Mobeelizer.Mobile.Wp7;
 using System.Threading;
@@ -33,14 +24,14 @@ namespace wp7_sdk_unitTests.Tests
         public void Login()
         {
             UTWebRequest.SyncData = "firstSync.zip";
-            MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
+            MobeelizerOperationError loginStatus = null;
             Mobeelizer.Login("user", "password", (s) =>
                 {
-                    loginStatus = s.GetLoginStatus();
+                    loginStatus = s;
                     loginEvent.Set();
                 });
             loginEvent.WaitOne();
-            Assert.AreEqual(loginStatus, MobeelizerLoginStatus.OK);
+            Assert.IsNull(loginStatus);
         }
 
         private ManualResetEvent login_02Event = new ManualResetEvent(false);
@@ -48,14 +39,14 @@ namespace wp7_sdk_unitTests.Tests
         [TestMethod]
         public void Login_02()
         {
-            MobeelizerLoginStatus loginStatus = MobeelizerLoginStatus.OTHER_FAILURE;
+            MobeelizerOperationError loginStatus = null;
             Mobeelizer.Login("user", "passsssword", (s) =>
                 {
-                    loginStatus = s.GetLoginStatus();
+                    loginStatus = s;
                     login_02Event.Set();
                 });
             login_02Event.WaitOne();
-            Assert.AreEqual(loginStatus, MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
+            Assert.IsNotNull(loginStatus);
         }
 
         private ManualResetEvent syncAllLoginEvent = new ManualResetEvent(false);
@@ -82,14 +73,14 @@ namespace wp7_sdk_unitTests.Tests
                 justAddEntityGuid = de.Guid;
             }
 
-            MobeelizerSyncStatus status = MobeelizerSyncStatus.NONE;
+            MobeelizerOperationError status = null;
             Mobeelizer.SyncAll((s) =>
                 {
-                    status = s.GetSyncStatus();
+                    status = s;
                     this.syncAllEvent.Set();
                 });
             syncAllEvent.WaitOne();
-            Assert.AreEqual(MobeelizerSyncStatus.FINISHED_WITH_SUCCESS, status);
+            Assert.IsNull(status);
             Department foundObject = null;
 
             using (IMobeelizerTransaction db = Mobeelizer.GetDatabase().BeginTransaction())

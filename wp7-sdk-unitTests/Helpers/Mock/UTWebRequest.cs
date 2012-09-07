@@ -88,7 +88,7 @@ namespace wp7_sdk_unitTests.Helpers.Mock
                     case "/sync/checkStatus":
                         stream = new MemoryStream();
                         StreamWriter writer = new StreamWriter(stream);
-                        writer.Write("{\r\n  \"status\": \"OK\",\r\n  \"content\": {\r\n    \"status\": \"FINISHED\",\r\n    \"result\": null,\r\n    \"message\": null\r\n  }\r\n}");
+                        writer.Write("{\r\n    \"status\": \"FINISHED\",\r\n    \"result\": null,\r\n    \"message\": null\r\n  }");
                         writer.Flush();
                         stream.Seek(0, SeekOrigin.Begin);
                         break;
@@ -105,9 +105,7 @@ namespace wp7_sdk_unitTests.Helpers.Mock
                         ++ticket;
                         stream = new MemoryStream();
                         StreamWriter writer = new StreamWriter(stream);
-                        writer.Write("{ \"status\" : \"OK\", \"content\" : \"");
                         writer.Write(ticket);
-                        writer.Write("\"}");
                         writer.Flush();
                         stream.Seek(0, SeekOrigin.Begin);
                         break;
@@ -149,11 +147,11 @@ namespace wp7_sdk_unitTests.Helpers.Mock
             StreamWriter writer = new StreamWriter(stream);
             if (this.Headers["mas-user-name"] == "user" && this.Headers["mas-user-password"] == "password")
             {
-                writer.Write("{\r\n  \"status\": \"OK\",\r\n  \"content\": {\r\n    \"role\": \"users-mobile\",\r\n    \"instanceGuid\": \"e22e4ce6-1583-49b1-bb46-8dd097589c09\"\r\n  }\r\n}");
+                writer.Write("{\r\n    \"role\": \"users-mobile\",\r\n    \"instanceGuid\": \"e22e4ce6-1583-49b1-bb46-8dd097589c09\"\r\n  }");
             }
             else
             {
-                writer.Write("{\r\n  \"content\": {\r\n    \"messageCode\": \"authenticationFailure\",\r\n    \"message\": \"Authentication failure for user 'usefr', vendor 'mobeelizer' and application 'test1'#'test'\",\r\n    \"arguments\": null\r\n  },\r\n  \"status\": \"ERROR\"\r\n}");
+                writer.Write("{\r\n    \"messageCode\": \"authenticationFailure\",\r\n    \"message\": \"Authentication failure for user 'usefr', vendor 'mobeelizer' and application 'test1'#'test'\",\r\n    \"arguments\": null\r\n  }");
             }
             writer.Flush();
             stream.Seek(0, SeekOrigin.Begin);

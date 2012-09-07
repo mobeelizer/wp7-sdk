@@ -117,7 +117,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
         /// <param name="callback">Callback method.</param>
-        public static void Login(String instance, String login, String password, MobeelizerLoginCallback callback)
+        public static void Login(String instance, String login, String password, MobeelizerOperationCallback callback)
         {
             Instance.Login(instance, login, password, callback);
         }
@@ -128,7 +128,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
         /// <param name="callback">Callback method.</param>
-        public static void Login(String login, String password, MobeelizerLoginCallback callback)
+        public static void Login(String login, String password, MobeelizerOperationCallback callback)
         {
             Instance.Login(login, password, callback);
         }
@@ -160,7 +160,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void Sync(MobeelizerSyncCallback callback)
+        public static void Sync(MobeelizerOperationCallback callback)
         {
             Instance.Sync(callback);
         }
@@ -172,7 +172,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void SyncAll(MobeelizerSyncCallback callback)
+        public static void SyncAll(MobeelizerOperationCallback callback)
         {
             Instance.SyncAll(callback);
         }
@@ -223,7 +223,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// </summary>
         /// <param name="chanelUri">Notification channel uri.</param>
         /// <param name="callback">Callback method.</param>
-        public static void RegisterForRemoteNotifications(String chanelUri, MobeelizerNotificationCallback callback)
+        public static void RegisterForRemoteNotifications(String chanelUri, MobeelizerOperationCallback callback)
         {
             Instance.RegisterForRemoteNotifications(chanelUri, callback);
         }
@@ -235,7 +235,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void UnregisterForRemoteNotifications(MobeelizerNotificationCallback callback)
+        public static void UnregisterForRemoteNotifications(MobeelizerOperationCallback callback)
         {
             Instance.UnregisterForRemoteNotifications(callback);
         }
@@ -248,7 +248,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void SendRemoteNotification(IDictionary<String, String> notification, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotification(IDictionary<String, String> notification, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(null, null, null, notification, callback);
         }
@@ -262,7 +262,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void  SendRemoteNotificationToDevice(IDictionary<String, String> notification, String device, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotificationToDevice(IDictionary<String, String> notification, String device, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(device, null, null, notification, callback);
         }
@@ -276,7 +276,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void  SendRemoteNotificationToUsers(IDictionary<String, String> notification, IList<String> users, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotificationToUsers(IDictionary<String, String> notification, IList<String> users, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(null, null, users, notification, callback);
         }
@@ -291,7 +291,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void SendRemoteNotificationToUsersOnDevice(IDictionary<String, String> notification, IList<String> users, String device, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotificationToUsersOnDevice(IDictionary<String, String> notification, IList<String> users, String device, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(device, null, users, notification, callback);
         }
@@ -305,7 +305,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void SendRemoteNotificationToGroup(IDictionary<String, String> notification, String group, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotificationToGroup(IDictionary<String, String> notification, String group, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(null, group, null, notification, callback);
         }
@@ -320,7 +320,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
         /// <exception cref="System.UnauthorizedAccessException">
         /// If user session is not active.
         /// </exception>
-        public static void SendRemoteNotificationToGroupOnDevice(IDictionary<String, String> notification, String group, String device, MobeelizerNotificationCallback callback)
+        public static void SendRemoteNotificationToGroupOnDevice(IDictionary<String, String> notification, String group, String device, MobeelizerOperationCallback callback)
         {
             Instance.SendRemoteNotification(device, group, null, notification, callback);
         }

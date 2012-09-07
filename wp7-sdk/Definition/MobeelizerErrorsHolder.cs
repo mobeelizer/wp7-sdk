@@ -77,5 +77,16 @@ namespace Com.Mobeelizer.Mobile.Wp7.Definition
 
             errors[field].Add(new MobeelizerError(code, message, args));
         }
+
+        internal IList<Object> PrepareErrorArguments()
+        {
+            IList<Object> args = new List<Object>();
+            foreach (var fieldErrors in errors)
+            {
+                args.Add(fieldErrors);
+            }
+
+            return args;
+        }
     }
 }

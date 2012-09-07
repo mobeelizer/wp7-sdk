@@ -186,9 +186,9 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
             return new MobeelizerSyncEnumerable(this, models); 
         }
 
-        internal bool UpdateEntitiesFromSync(IEnumerable<MobeelizerJsonEntity> entities, bool isAllSynchronization)
+        internal MobeelizerOperationError UpdateEntitiesFromSync(IEnumerable<MobeelizerJsonEntity> entities, bool isAllSynchronization)
         {
-            bool isTransactionSuccess = true;
+            MobeelizerOperationError transactionErrors = null;
             using (MobeelizerDatabaseContext dataContext = new MobeelizerDatabaseContext(this.ConnectionString))
             {
                 if (isAllSynchronization)
@@ -200,26 +200,27 @@ namespace Com.Mobeelizer.Mobile.Wp7.Database
                     }
 
                     dataContext.ModelMetadata.DeleteAllOnSubmit(from m in dataContext.ModelMetadata select m);
+                    // TODO: check it
                     //dataContext.Files.DeleteAllOnSubmit(from f in dataContext.Files select f);
                     dataContext.SubmitChanges();
                 }
 
                 foreach (MobeelizerJsonEntity entity in entities)
                 {
-                    isTransactionSuccess = models[entity.Model].UpdateFromSync(entity, dataContext);
-                    if (!isTransactionSuccess)
+                    transactionErrors = models[entity.Model].UpdateFromSync(entity, dataContext);
+                    if (transactionErrors != null)
                     {
                         break;
                     }
                 }
 
-                if (isTransactionSuccess)
+                if (transactionErrors == null)
                 {
                     dataContext.SubmitChanges();
                 }
             }
 
-            return isTransactionSuccess;
+            return transactionErrors;
         }
 
         internal bool ValidateEntity(MobeelizerWp7Model insert, MobeelizerErrorsHolder errors)

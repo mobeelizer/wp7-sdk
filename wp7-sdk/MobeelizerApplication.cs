@@ -245,40 +245,39 @@ namespace Com.Mobeelizer.Mobile.Wp7
             loggedIn = false;
         }
 
-        internal void Login(string instance, string user, string password, MobeelizerLoginCallback callback)
+        internal void Login(string instance, string user, string password, MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
             {
-                MobeelizerLoginResult result = null;
+                MobeelizerOperationError error = null;
                 try
                 {
-                    MobeelizerLoginStatus status = Login(instance, user, password, false);
-                    result = new MobeelizerLoginResult(status);
+                    error = Login(instance, user, password, false);
                 }
                 catch (Exception e)
                 {
                     Log.i(TAG, e.Message);
-                    result = new MobeelizerLoginResult(e);
+                    error = MobeelizerOperationError.Exception(e);
                 }
 
-                callback(result);
+                callback(error);
             }));
 
             thread.Name = "Mobeelizer login thread";
             thread.Start();
         }
 
-        internal void Login(string user, string password, MobeelizerLoginCallback callback)
+        internal void Login(string user, string password, MobeelizerOperationCallback callback)
         {
             Login(mode == MobeelizerMode.PRODUCTION ? "production" : "test", user, password, callback);
         }
 
-        internal MobeelizerLoginStatus OfflineLogin(String instance, String user, String password)
+        internal MobeelizerOperationError OfflineLogin(String instance, String user, String password)
         {
             return Login(instance, user, password, true);
         }
 
-        private MobeelizerLoginStatus Login(string instance, string user, string password, bool offline)
+        private MobeelizerOperationError Login(string instance, string user, string password, bool offline)
         {
             if (IsLoggedIn)
             {
@@ -289,19 +288,19 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.instance = instance;
             this.user = user;
             this.password = password;
-            MobeelizerLoginResponse status = connectionManager.Login(offline);
-            Log.i(TAG, "Login result: " + status.Status + ", " + status.Role + ", " + status.InstanceGuid);
-            if (status.Status != MobeelizerLoginStatus.OK)
+            MobeelizerLoginResponse response = connectionManager.Login(offline);
+            Log.i(TAG, "Login result: " + response.Error + ", " + response.Role + ", " + response.InstanceGuid);
+            if (response.Error != null)
             {
                 this.instance = null;
                 this.user = null;
                 this.password = null;
-                return status.Status;
+                return response.Error;
             }
             else
             {
-                role = status.Role;
-                instanceGuid = status.InstanceGuid;
+                role = response.Role;
+                instanceGuid = response.InstanceGuid;
                 loggedIn = true;
                 IDictionary<String, MobeelizerModel> models = new Dictionary<String, MobeelizerModel>();
                 foreach (MobeelizerModel model in definitionConverter.Convert(definition, entityPackage, role))
@@ -311,12 +310,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
                 database = new MobeelizerDatabase(this, models);
                 database.Open();
-                if (status.InitialSyncRequired)
+                if (response.InitialSyncRequired)
                 {
                     Sync(true);
                 }
 
-                return MobeelizerLoginStatus.OK;
+                return null;
             }
         }
 
@@ -334,74 +333,72 @@ namespace Com.Mobeelizer.Mobile.Wp7
             return this.database;
         }
 
-        internal void Sync(MobeelizerSyncCallback callback)
+        internal void Sync(MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
             {
-                MobeelizerSyncResult result = null;
+                MobeelizerOperationError error = null;
                 try
                 {
-                    MobeelizerSyncStatus status = Sync();
-                    result = new MobeelizerSyncResult(status);
+                    error = Sync();
                 }
                 catch (Exception e)
                 {
                     Log.i(TAG, e.Message);
                     this.SetSyncStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
-                    result = new MobeelizerSyncResult(e);
+                    error = MobeelizerOperationError.Exception(e);
                 }
-                callback(result);
+                callback(error);
             }));
             thread.Name = "Mobeelizer synchronization thread";
             thread.Start();
         }
 
-        private MobeelizerSyncStatus Sync()
+        private MobeelizerOperationError Sync()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");
             return Sync(false);
         }
 
-        internal void SyncAll(MobeelizerSyncCallback callback)
+        internal void SyncAll(MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
             {
                 try
                 {
-                    MobeelizerSyncStatus status = SyncAll();
-                    callback(new MobeelizerSyncResult(status));
+                    callback(SyncAll());
                 }
                 catch (Exception e)
                 {
                     Log.i(TAG, e.Message);
                     this.SetSyncStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
-                    callback(new MobeelizerSyncResult(e));
+                    callback(MobeelizerOperationError.Exception(e));
                 }
             }));
             thread.Name = "Mobeelizer full synchronization thread";
             thread.Start();
         }
 
-        private MobeelizerSyncStatus SyncAll()
+        private MobeelizerOperationError SyncAll()
         {
             CheckIfLoggedIn();
             Log.i(TAG, "Truncate data and start sync service.");
             return Sync(true);
         }
 
-        private MobeelizerSyncStatus Sync(bool syncAll)
+        private MobeelizerOperationError Sync(bool syncAll)
         {
             if (mode == MobeelizerMode.DEVELOPMENT || CheckSyncStatus().IsRunning())
             {
                 Log.i(TAG, "Sync is already running - skipping.");
-                return MobeelizerSyncStatus.NONE;
+                return null;
             }
             else if (!connectionManager.IsNetworkAvailable)
             {
                 Log.i(TAG, "Sync cannot be performed - network is not available.");
                 SetSyncStatus(MobeelizerSyncStatus.FINISHED_WITH_FAILURE);
-                return MobeelizerSyncStatus.FINISHED_WITH_FAILURE;
+                return MobeelizerOperationError.MissingConnectionError();
             }
             else
             {
@@ -557,86 +554,70 @@ namespace Com.Mobeelizer.Mobile.Wp7
             return this.tombstoningManager;
         }
 
-        internal void RegisterForRemoteNotifications(string chanelUri, MobeelizerNotificationCallback callback)
+        internal void RegisterForRemoteNotifications(string chanelUri, MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
                 {
-                    MobeelizerNotificationResult result;
+                    MobeelizerOperationError error = null;
                     try
                     {
                         NotificationChannelUri = chanelUri;
                         if (IsLoggedIn)
                         {
-                            connectionManager.RegisterForRemoteNotifications(chanelUri);
+                           error = connectionManager.RegisterForRemoteNotifications(chanelUri);
                         }
-
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.SUCCESS);
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        Log.i(TAG, e.Message);
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.FAILURE);
                     }
                     catch (Exception e)
                     {
-                        result = new MobeelizerNotificationResult(e);
+                        Log.i(TAG, e.Message);
+                        error = MobeelizerOperationError.Exception(e);
                     }
 
-                    callback(result);
+                    callback(error);
                 }));
             thread.Name = "Register for notification thread";
             thread.Start();
         }
 
-        internal void UnregisterForRemoteNotifications(MobeelizerNotificationCallback callback)
+        internal void UnregisterForRemoteNotifications(MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
                 {
-                    MobeelizerNotificationResult result;
+                    MobeelizerOperationError error = null;
                     try
                     {
                         CheckIfLoggedIn();
-                        connectionManager.UnregisterForRemoteNotifications(NotificationChannelUri);
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.SUCCESS);
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        Log.i(TAG, e.Message);
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.FAILURE);
+                        error = connectionManager.UnregisterForRemoteNotifications(NotificationChannelUri);
                     }
                     catch (Exception e)
                     {
-                        result = new MobeelizerNotificationResult(e);
+                        Log.i(TAG, e.Message);
+                        error = MobeelizerOperationError.Exception(e);
                     }
 
-                    callback(result);
+                    callback(error);
                 }));
             thread.Name = "Register for notification thread";
             thread.Start();
         }
 
-        internal void SendRemoteNotification(String device, String group, IList<String> users, IDictionary<String, String> notification, MobeelizerNotificationCallback callback)
+        internal void SendRemoteNotification(String device, String group, IList<String> users, IDictionary<String, String> notification, MobeelizerOperationCallback callback)
         {
             Thread thread = new Thread(new ThreadStart(() =>
                 {
-                    MobeelizerNotificationResult result;
+                    MobeelizerOperationError error;
                     try
                     {
                         CheckIfLoggedIn();
-                        connectionManager.SendRemoteNotification(device, group, users, notification);
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.SUCCESS);
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        Log.i(TAG, e.Message);
-                        result = new MobeelizerNotificationResult(MobeelizerCommunicationStatus.FAILURE);
+                        error = connectionManager.SendRemoteNotification(device, group, users, notification);
                     }
                     catch (Exception e)
                     {
-                        result = new MobeelizerNotificationResult(e);
+                        Log.i(TAG, e.Message);
+                        error = MobeelizerOperationError.Exception(e);
                     }
 
-                    callback(result);
+                    callback(error);
                 }));
             thread.Name = "Send notification thread";
             thread.Start();

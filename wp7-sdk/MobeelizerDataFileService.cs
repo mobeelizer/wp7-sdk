@@ -3,6 +3,7 @@ using System.IO.IsolatedStorage;
 using System.IO;
 using Com.Mobeelizer.Mobile.Wp7.Sync;
 using Com.Mobeelizer.Mobile.Wp7.Database;
+using Com.Mobeelizer.Mobile.Wp7.Api;
 
 namespace Com.Mobeelizer.Mobile.Wp7
 {
@@ -17,7 +18,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             this.application = application;
         }
 
-        internal bool PrepareOutputFile(Others.File outputFile)
+        internal MobeelizerOperationError PrepareOutputFile(Others.File outputFile)
         {
             MobeelizerOutputData outputData = null;
             MobeelizerSyncEnumerable enumerable = null;
@@ -48,7 +49,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     }
                 }
 
-                return true;
+                return null;
             }
             catch (IOException e)
             {
@@ -63,21 +64,21 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        internal bool ProcessInputFile(Others.File inputFile, bool isAllSynchronization)
+        internal MobeelizerOperationError ProcessInputFile(Others.File inputFile, bool isAllSynchronization)
         {
             MobeelizerInputData inputData = null;
             try
             {
                 inputData = new MobeelizerInputData(inputFile);
                 application.GetFileService().AddFilesFromSync(inputData.GetFiles(), inputData);
-                bool isSuccessful = ((MobeelizerDatabase)application.GetDatabase()).UpdateEntitiesFromSync(inputData.GetInputData(), isAllSynchronization);
-                if (!isSuccessful)
+                MobeelizerOperationError updateError = ((MobeelizerDatabase)application.GetDatabase()).UpdateEntitiesFromSync(inputData.GetInputData(), isAllSynchronization);
+                if (updateError != null)
                 {
-                    return false;
+                    return updateError;
                 }
 
                 application.GetFileService().DeleteFilesFromSync(inputData.GetDeletedFiles());
-                return true;
+                return null;
             }
             catch (IOException e)
             {

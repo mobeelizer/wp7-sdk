@@ -18,20 +18,20 @@ namespace Com.Mobeelizer.Mobile.Wp7
 
         public MobeelizerLoginResponse Login(bool offline)
         {
-            return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, "00000000-0000-0000-0000-000000000000", developmentRole, false);
+            return new MobeelizerLoginResponse(null, "00000000-0000-0000-0000-000000000000", developmentRole, false);
         }
-        
-        public string SendSyncAllRequest()
+
+        public MobeelizerSyncResponse SendSyncAllRequest()
         {
             throw new NotSupportedException(SYNC_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public string SendSyncDiffRequest(Others.File outputFile)
+        public MobeelizerSyncResponse SendSyncDiffRequest(Others.File outputFile)
         {
             throw new NotSupportedException(SYNC_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public Others.File GetSyncData(string ticket)
+        public MobeelizerGetSyncDataOperationResult GetSyncData(string ticket)
         {
             throw new NotSupportedException(SYNC_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
@@ -46,22 +46,22 @@ namespace Com.Mobeelizer.Mobile.Wp7
             throw new NotSupportedException(SYNC_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public bool WaitUntilSyncRequestComplete(string ticket)
+        public MobeelizerOperationError WaitUntilSyncRequestComplete(string ticket)
         {
             throw new NotSupportedException(SYNC_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public void RegisterForRemoteNotifications(string chanelUri)
+        public MobeelizerOperationError RegisterForRemoteNotifications(string chanelUri)
         {
             throw new NotSupportedException(PUSH_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public void UnregisterForRemoteNotifications(string NotificationChannelUri)
+        public MobeelizerOperationError UnregisterForRemoteNotifications(string NotificationChannelUri)
         {
             throw new NotSupportedException(PUSH_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }
 
-        public void SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification)
+        public MobeelizerOperationError SendRemoteNotification(string device, string group, System.Collections.Generic.IList<string> users, System.Collections.Generic.IDictionary<string, string> notification)
         {
             throw new NotSupportedException(PUSH_IS_NOT_SUPPORTED_IN_DEVELOPMENT_MODE);
         }

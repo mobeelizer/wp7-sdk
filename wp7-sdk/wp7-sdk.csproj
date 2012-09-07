@@ -9,7 +9,7 @@
     <ProjectTypeGuids>{C089C8C0-30E0-4E22-80C0-CE093F111A43};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>wp7_sdk</RootNamespace>
+    <RootNamespace>Com.Mobeelizer.Mobile.Wp7</RootNamespace>
     <AssemblyName>wp7-sdk</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
@@ -64,12 +64,10 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\MobeelizerOperationCallback.cs" />
+    <Compile Include="Api\MobeelizerOperationError.cs" />
+    <Compile Include="Api\MobeelizerSyncStatus.cs" />
     <Compile Include="Api\NamespaceDoc.cs" />
-    <Compile Include="Api\MobeelizerCommunicationStatus.cs" />
-    <Compile Include="Api\MobeelizerLoginResult.cs" />
-    <Compile Include="Api\MobeelizerNotificationCallback.cs" />
-    <Compile Include="Api\MobeelizerNotificationResult.cs" />
-    <Compile Include="Api\MobeelizerSyncResult.cs" />
     <Compile Include="Api\MobeelizerSyncStatusChangedEventHandler.cs" />
     <Compile Include="Configuration\NamespaceDoc.cs" />
     <Compile Include="Connection\IMobeelizerNotificationTokenConverter.cs" />
@@ -84,27 +82,23 @@
     <Compile Include="Database\MobeelizerTransaction.cs" />
     <Compile Include="MobeelizerDevelopmentConnectionManager.cs" />
     <Compile Include="MobeelizerFile.cs" />
+    <Compile Include="MobeelizerGetSyncDataOperationResult.cs" />
+    <Compile Include="MobeelizerSyncResponse.cs" />
     <Compile Include="MobeelizerTombstoningManager.cs" />
     <Compile Include="MobeelizerTombstoningState.cs" />
     <Compile Include="Model\MobeelizerField.cs" />
     <Compile Include="Api\MobeelizerMode.cs" />
     <Compile Include="Model\MobeelizerModel.cs" />
     <Compile Include="Api\MobeelizerWp7Model.cs" />
-    <Compile Include="Api\MobeelizerSyncStatus.cs" />
     <Compile Include="Api\IMobeelizerDatabase.cs" />
-    <Compile Include="Api\MobeelizerLoginStatus.cs" />
-    <Compile Include="Api\MobeelizerSyncCallback.cs" />
     <Compile Include="Configuration\MobeelizerConfigProperty.cs" />
     <Compile Include="Configuration\MobeelizerConfigurationSection.cs" />
     <Compile Include="Configuration\MobeelizerPropertiesCollection.cs" />
     <Compile Include="Connection\IMobeelizerConnectionService.cs" />
     <Compile Include="Connection\MobeelizerAuthenticateResponse.cs" />
-    <Compile Include="Connection\MobeelizerAuthenticateResponseCallback.cs" />
     <Compile Include="Connection\IMobeelizerAuthenticateResponse.cs" />
     <Compile Include="Connection\MobeelizerConnectionService.cs" />
-    <Compile Include="Connection\MobeelizerGetSyncDataCallback.cs" />
     <Compile Include="Connection\MobeelizerSynchronizationStatus.cs" />
-    <Compile Include="Connection\MobeelizerSyncRequestCallback.cs" />
     <Compile Include="Definition\IMobeelizerDefinition.cs" />
     <Compile Include="Definition\MobeelizerDefinitionConverter.cs" />
     <Compile Include="Definition\MobeelizerErrorsHolder.cs" />
@@ -132,7 +126,6 @@
     <Compile Include="Definition\Types\Helpers\MobeelizerTextFieldTypeHelper.cs" />
     <Compile Include="Mobeelizer.cs" />
     <Compile Include="MobeelizerApplication.cs" />
-    <Compile Include="Api\MobeelizerLoginCallback.cs" />
     <Compile Include="IMobeelizerConnectionManager.cs" />
     <Compile Include="Database\MobeelizerDatabase.cs" />
     <Compile Include="Database\MobeelizerDatabaseContext.cs" />

@@ -15,7 +15,6 @@ namespace wp7_sdk_unitTests.Tests
     {
         ManualResetEvent loginEvent = new ManualResetEvent(false);
 
-
         [TestMethod]
         public void SimpleTest()
         {

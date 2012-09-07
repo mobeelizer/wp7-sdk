@@ -61,7 +61,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
             public MobeelizerModelMetadata Metadata { get; set; }
         }
 
-        internal bool UpdateFromSync(MobeelizerJsonEntity entity, MobeelizerDatabaseContext db)
+        internal MobeelizerOperationError UpdateFromSync(MobeelizerJsonEntity entity, MobeelizerDatabaseContext db)
         {
             var query = from MobeelizerWp7Model e in db.GetTable(this.Type) join MobeelizerModelMetadata m in db.ModelMetadata on e.Guid equals m.Guid where m.Guid == entity.Guid && m.Model == this.Name select new QueryResult() { Entity = e, Metadata = m };
             bool exists = true;
@@ -80,7 +80,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
 
             if (modifiedByUser || !exists && entity.IsDeleted)
             {
-                return true;
+                return null;
             }
 
             if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.NO_IN_CONFLICT && entity.IsDeleted)
@@ -91,7 +91,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                     table.DeleteAllOnSubmit(from MobeelizerWp7Model record in table where record.Guid == entity.Guid select record);
                 }
 
-                return true;
+                return null;
             }
 
             Dictionary<String, object> values = new Dictionary<string, object>();
@@ -101,7 +101,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                 PropertyInfo modifiedProperty = this.Type.GetProperty("Modified");
                 property.SetValue(result.Entity, true, null);
                 modifiedProperty.SetValue(result.Entity, false, null);
-                return true;
+                return null;
             }
             else if (entity.ConflictState == MobeelizerJsonEntity.MobeelizerConflictState.IN_CONFLICT)
             {
@@ -131,7 +131,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
 
             if (!errors.IsValid)
             {
-                return false;
+                return MobeelizerOperationError.UpdateFromSyncError(errors);
             }
 
             if (exists)
@@ -144,7 +144,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Model
                 InsertEntity(db, values);
             }
 
-            return true;
+            return null;
         }
 
         private void InsertEntity(MobeelizerDatabaseContext db, IDictionary<String, object> values)

@@ -37,12 +37,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 if (roleAndInstanceGuid[0] == null)
                 {
                     Log.i(TAG, "Login failure. Missing connection failure.");          
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.MISSING_CONNECTION_FAILURE);
+                    return new MobeelizerLoginResponse(MobeelizerOperationError.MissingConnectionError());
                 }
                 else
                 {
                     Log.i(TAG, "Login '" + application.User + "' from database successful.");
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
+                    return new MobeelizerLoginResponse(null, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
                 }
             }
 
@@ -58,19 +58,19 @@ namespace Com.Mobeelizer.Mobile.Wp7
                     response = connectionService.Authenticate(application.User, application.Password);
                 }
 
-                if (response != null)
+                if (response.Error == null)
                 {
                     bool initialSyncRequired = IsInitialSyncRequired(application, response.InstanceGuid);
 
                     SetRoleAndInstanceGuidInDatabase(application, response.Role, response.InstanceGuid);
                     Log.i(TAG, "Login '" + application.User + "' successful.");
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, response.InstanceGuid, response.Role, initialSyncRequired);
+                    return new MobeelizerLoginResponse(null, response.InstanceGuid, response.Role, initialSyncRequired);
                 }
                 else
                 {
                     Log.i(TAG, "Login failure. Authentication error.");
                     ClearRoleAndInstanceGuidInDatabase(application);
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.AUTHENTICATION_FAILURE);
+                    return new MobeelizerLoginResponse(response.Error);
                 }
             }
             catch (InvalidOperationException e)
@@ -79,11 +79,11 @@ namespace Com.Mobeelizer.Mobile.Wp7
                 String[] roleAndInstanceGuid = GetRoleAndInstanceGuidFromDatabase(application);
                 if (roleAndInstanceGuid[0] == null)
                 {
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.CONNECTION_FAILURE);
+                    return new MobeelizerLoginResponse(MobeelizerOperationError.ConnectionError(e.Message));
                 }
                 else
                 {
-                    return new MobeelizerLoginResponse(MobeelizerLoginStatus.OK, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
+                    return new MobeelizerLoginResponse(null, roleAndInstanceGuid[1], roleAndInstanceGuid[0], false);
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public String SendSyncAllRequest()
+        public MobeelizerSyncResponse SendSyncAllRequest()
         {
             CheckNetworkAwailable();
             try
@@ -137,7 +137,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public String SendSyncDiffRequest(Others.File outputFile)
+        public MobeelizerSyncResponse SendSyncDiffRequest(Others.File outputFile)
         {
             CheckNetworkAwailable();
             try
@@ -150,7 +150,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public Others.File GetSyncData(String ticket)
+        public MobeelizerGetSyncDataOperationResult GetSyncData(String ticket)
         {
             CheckNetworkAwailable();
             try
@@ -176,7 +176,7 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public bool WaitUntilSyncRequestComplete(String ticket)
+        public MobeelizerOperationError WaitUntilSyncRequestComplete(String ticket)
         {
             CheckNetworkAwailable();
             try
@@ -189,12 +189,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public void RegisterForRemoteNotifications(string channelUri)
+        public MobeelizerOperationError RegisterForRemoteNotifications(string channelUri)
         {
             CheckNetworkAwailable();
             try
             {
-                connectionService.RegisterForRemoteNotifications(channelUri);
+                return connectionService.RegisterForRemoteNotifications(channelUri);
             }
             catch (IOException e)
             {
@@ -202,12 +202,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public void UnregisterForRemoteNotifications(string channelUri)
+        public MobeelizerOperationError UnregisterForRemoteNotifications(string channelUri)
         {
             CheckNetworkAwailable();
             try
             {
-                connectionService.UnregisterForRemoteNotifications(channelUri);
+                return connectionService.UnregisterForRemoteNotifications(channelUri);
             }
             catch (IOException e)
             {
@@ -215,12 +215,12 @@ namespace Com.Mobeelizer.Mobile.Wp7
             }
         }
 
-        public void SendRemoteNotification(string device, string group, IList<string> users, IDictionary<string, string> notification)
+        public MobeelizerOperationError SendRemoteNotification(string device, string group, IList<string> users, IDictionary<string, string> notification)
         {
             CheckNetworkAwailable();
             try
             {
-                connectionService.SendRemoteNotification(device, group, users, notification);
+                return connectionService.SendRemoteNotification(device, group, users, notification);
             }
             catch (IOException e)
             {

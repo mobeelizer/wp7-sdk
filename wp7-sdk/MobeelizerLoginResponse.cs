@@ -4,20 +4,20 @@ namespace Com.Mobeelizer.Mobile.Wp7
 {
     internal class MobeelizerLoginResponse
     {
-        public MobeelizerLoginResponse(MobeelizerLoginStatus status)
+        public MobeelizerLoginResponse(MobeelizerOperationError error)
         {
-            this.Status = status;
+            this.Error = error;
         }
 
-        public MobeelizerLoginResponse(MobeelizerLoginStatus status, string instanceGuid, string role, bool initSyncRequired)
+        public MobeelizerLoginResponse(MobeelizerOperationError error, string instanceGuid, string role, bool initSyncRequired)
         {
             this.Role = role;
-            this.Status = status;
+            this.Error = error;
             this.InitialSyncRequired = initSyncRequired;
             this.InstanceGuid = instanceGuid;
         }
 
-        public MobeelizerLoginStatus Status { get; private set; }
+        public MobeelizerOperationError Error { get; private set; }
 
         public string Role { get; private set; }
 

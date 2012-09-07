@@ -1,5 +1,4 @@
-﻿
-namespace Com.Mobeelizer.Mobile.Wp7.Api
+﻿namespace Com.Mobeelizer.Mobile.Wp7.Api
 {
     /// <summary>
     /// The status of current sync.
