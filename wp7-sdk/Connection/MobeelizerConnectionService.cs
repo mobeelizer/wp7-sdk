@@ -229,7 +229,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
         public MobeelizerOperationError WaitUntilSyncRequestComplete(string ticket)
         {
             MobeelizerSynchronizationStatus sycStatus = MobeelizerSynchronizationStatus.REJECTED;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 240; i++)
             {
                 WebRequest request = WebRequest.Create(GetUrl(String.Format("/checkStatus?ticket={0}&aaa={1}", ticket, DateTime.Now.Ticks)));
                 request.Method = "GET";
@@ -257,7 +257,7 @@ namespace Com.Mobeelizer.Mobile.Wp7.Connection
 
                 try
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(100 * i + 500);
                 }
                 catch (Exception e)
                 {
