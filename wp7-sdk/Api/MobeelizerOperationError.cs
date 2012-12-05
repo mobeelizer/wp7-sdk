@@ -59,7 +59,11 @@ namespace Com.Mobeelizer.Mobile.Wp7.Api
         {
             String code = (String)jObject["code"];
             String message = (String)jObject["message"];
-            JArray array = (JArray)jObject["arguments"];
+            JArray array = null;
+            if (jObject["arguments"] is JArray)
+            {
+                array = (JArray)jObject["arguments"];
+            }
             IList<Object> args = new List<Object>();
             if (array != null)
             {
